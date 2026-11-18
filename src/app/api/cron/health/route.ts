@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { verifyCronSecret } from '@/lib/auth/cron';
 import { claimHealthRun, releaseHealthRun } from '@/lib/db/settings';
 import { getServerEnv } from '@/lib/env';
+import { maybeCleanup } from '@/lib/health/cleanup';
 import { createHealthDeps } from '@/lib/health/deps';
 import { runHealthChecks } from '@/lib/health/runner';
 
@@ -19,6 +20,13 @@ export async function POST(request: Request) {
 
   try {
     const result = await runHealthChecks(createHealthDeps());
+
+    try {
+      await maybeCleanup(new Date());
+    } catch (error) {
+      console.error('health cleanup failed', error);
+    }
+
     return NextResponse.json(result);
   } catch (error) {
     console.error('health run failed', error);

@@ -38,3 +38,17 @@ export async function releaseHealthRun(): Promise<void> {
   const sql = getSql();
   await sql`select release_health_run()`;
 }
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+export async function cleanupOldData(now: Date): Promise<void> {
+  const sql = getSql();
+  const checksBefore = new Date(now.getTime() - 30 * DAY_MS);
+  const clicksBefore = new Date(now.getTime() - 90 * DAY_MS);
+
+  await sql.begin(async (tx) => {
+    await tx`delete from checks where checked_at < ${checksBefore}`;
+    await tx`delete from click_events where clicked_at < ${clicksBefore}`;
+    await tx`update settings set last_cleanup_at = ${now} where id = 1`;
+  });
+}

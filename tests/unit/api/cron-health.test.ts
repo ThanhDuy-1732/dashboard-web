@@ -11,8 +11,12 @@ vi.mock('@/lib/health/deps', () => ({
 vi.mock('@/lib/health/runner', () => ({
   runHealthChecks: vi.fn(),
 }));
+vi.mock('@/lib/health/cleanup', () => ({
+  maybeCleanup: vi.fn(async () => false),
+}));
 
 import { claimHealthRun, releaseHealthRun } from '@/lib/db/settings';
+import { maybeCleanup } from '@/lib/health/cleanup';
 import { runHealthChecks } from '@/lib/health/runner';
 import { POST } from '@/app/api/cron/health/route';
 
@@ -59,6 +63,7 @@ describe('POST /api/cron/health', () => {
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ checked: 2, skipped: false });
+    expect(maybeCleanup).toHaveBeenCalledOnce();
     expect(releaseHealthRun).toHaveBeenCalledOnce();
   });
 
