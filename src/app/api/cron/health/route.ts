@@ -1,0 +1,33 @@
+import { NextResponse } from 'next/server';
+import { verifyCronSecret } from '@/lib/auth/cron';
+import { claimHealthRun, releaseHealthRun } from '@/lib/db/settings';
+import { getServerEnv } from '@/lib/env';
+import { createHealthDeps } from '@/lib/health/deps';
+import { runHealthChecks } from '@/lib/health/runner';
+
+export async function POST(request: Request) {
+  const secret = getServerEnv().CRON_SECRET;
+
+  if (!verifyCronSecret(request.headers.get('x-cron-secret'), secret)) {
+    return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  }
+
+  const claimed = await claimHealthRun();
+  if (!claimed) {
+    return NextResponse.json({ skipped: true }, { status: 202 });
+  }
+
+  try {
+    const result = await runHealthChecks(createHealthDeps());
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('health run failed', error);
+    return NextResponse.json({ error: 'health run failed' }, { status: 500 });
+  } finally {
+    try {
+      await releaseHealthRun();
+    } catch (error) {
+      console.error('failed to release health run lock', error);
+    }
+  }
+}
