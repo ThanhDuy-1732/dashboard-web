@@ -1,3 +1,13 @@
+export function formatUptime(value: number | null): string {
+  if (value === null) return '—';
+  return `${Math.round(value * 10) / 10}%`;
+}
+
+export function formatLatency(ms: number | null): string {
+  if (ms === null) return '—';
+  return `${Math.round(ms)} ms`;
+}
+
 export function formatDateTime(value: string | Date): string {
   const date = typeof value === 'string' ? new Date(value) : value;
   const parts = new Intl.DateTimeFormat('en-GB', {
