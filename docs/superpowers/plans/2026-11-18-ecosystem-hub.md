@@ -22,7 +22,7 @@
 - Admin session: JWT HS256, `hub_session` cookie, httpOnly, sameSite=lax, secure in production, 7 days.
 - `ADMIN_PASSWORD=change-me-now` must be rejected when `NODE_ENV === 'production'`.
 - App icons are pasted URLs in v1. Owner clicks count as normal clicks in v1.
-- Node runtime for route handlers (`export const runtime = 'nodejs'`). Health cron route: `maxDuration = 60`.
+- Route handlers use the default Node.js runtime. Next 16 Cache Components forbids `runtime`/`dynamic` segment config; request-time behavior comes from reading the request, not config exports.
 - Every task ends with a passing test run and a commit.
 
 ## Review Focus
@@ -291,7 +291,7 @@ IP = first `x-forwarded-for` value, trimmed, fallback `unknown`. Hash `sha256(ip
 
 - [ ] **Step 5: Implement the route**
 
-`runtime = 'nodejs'`, `dynamic = 'force-dynamic'`. Look up the visible app; 404 if absent. Build event; if non-null, `await insertClickEvent` in a try/catch (log and continue) so redirect never depends on DB success. `NextResponse.redirect(app.url, 302)` with `cache-control: no-store`.
+No segment config exports (Cache Components rejects them); reading `slug` and `request.headers` keeps the handler request-time. Look up the visible app; 404 if absent. Build event; if non-null, `await insertClickEvent` in a try/catch (log and continue) so redirect never depends on DB success. `NextResponse.redirect(app.url, 302)` with `cache-control: no-store`.
 
 - [ ] **Step 6: Verify and commit**
 
@@ -515,7 +515,7 @@ Expected: FAIL.
 
 Rules exactly as the spec. `upsertStatus` receives `{ ...evaluation.status, app_id, target }`. Runner builds `HealthAlert` with target; recovery `downtimeMs = now - previous.last_down_at`. Wrap each target's persistence in try/catch so one failure does not abort others. In this task `deps.notify` is a no-op placeholder; Task 9 wires `deliverAlert`.
 
-Route: `runtime='nodejs'`, `dynamic='force-dynamic'`, `maxDuration=60`. Verify secret (SHA-256 + timingSafeEqual), claim, run, `finally release`. Return 500 when persistence fails so cron-job.org sends failure email.
+Route: no segment config exports (Cache Components rejects them); the handler is request-time because it reads the request body/headers. If `maxDuration` is accepted, set 60; otherwise rely on the default. Verify secret (SHA-256 + timingSafeEqual), claim, run, `finally release`. Return 500 when persistence fails so cron-job.org sends failure email.
 
 - [ ] **Step 6: Verify and commit**
 
