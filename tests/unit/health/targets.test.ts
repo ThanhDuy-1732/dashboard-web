@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { targetsForApp } from '@/lib/health/targets';
+import { isMonitoringPaused, targetsForApp } from '@/lib/health/targets';
 import type { AppRow } from '@/lib/db/types';
 
 const now = new Date('2026-11-18T00:00:00.000Z');
@@ -51,6 +51,16 @@ describe('targetsForApp', () => {
     ]);
   });
 
+  it('keeps the expected status for the app but expects 200 from Supabase', () => {
+    const [appTarget, supabaseTarget] = targetsForApp(
+      app({ expected_status: 301 }),
+      now,
+    );
+
+    expect(appTarget.expectedStatus).toBe(301);
+    expect(supabaseTarget.expectedStatus).toBe(200);
+  });
+
   it('prefers an explicit Supabase health URL', () => {
     const targets = targetsForApp(
       app({ supabase_health_url: 'https://custom.example.com/health' }),
@@ -67,6 +77,31 @@ describe('targetsForApp', () => {
         now,
       ),
     ).toEqual([]);
+  });
+
+  it('resumes when the pause has expired', () => {
+    expect(
+      targetsForApp(
+        app({ monitoring_paused_until: new Date('2026-11-17T23:00:00.000Z') }),
+        now,
+      ),
+    ).toHaveLength(2);
+  });
+
+  it('reports whether monitoring is currently paused', () => {
+    expect(
+      isMonitoringPaused(
+        app({ monitoring_paused_until: new Date('2026-11-18T00:30:00.000Z') }),
+        now,
+      ),
+    ).toBe(true);
+    expect(
+      isMonitoringPaused(
+        app({ monitoring_paused_until: new Date('2026-11-17T23:00:00.000Z') }),
+        now,
+      ),
+    ).toBe(false);
+    expect(isMonitoringPaused(app(), now)).toBe(false);
   });
 
   it('skips disabled targets and Supabase without a ref', () => {

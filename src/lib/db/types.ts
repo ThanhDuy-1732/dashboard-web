@@ -101,6 +101,7 @@ export type SettingsRow = {
   notify_recovery: boolean;
   repeat_reminder_minutes: number;
   health_run_locked_at: Date | null;
+  health_run_token: string | null;
   last_cleanup_at: Date | null;
   updated_at: Date;
 };

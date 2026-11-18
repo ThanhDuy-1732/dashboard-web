@@ -75,7 +75,11 @@ describe('evaluateCheck', () => {
 
   it('does not alert again while already down when reminders are off', () => {
     const result = evaluateCheck({
-      previous: previous({ state: 'down', consecutive_failures: 3 }),
+      previous: previous({
+        state: 'down',
+        consecutive_failures: 3,
+        last_down_alert_at: now,
+      }),
       check: check(false),
       settings: settings({ repeat_reminder_minutes: 0 }),
       now,
@@ -84,6 +88,21 @@ describe('evaluateCheck', () => {
     expect(result.incident).toBeNull();
     expect(result.alert).toBeNull();
     expect(result.status.consecutive_failures).toBe(4);
+  });
+
+  it('retries the down alert if the previous alert was never recorded', () => {
+    const result = evaluateCheck({
+      previous: previous({
+        state: 'down',
+        consecutive_failures: 3,
+        last_down_alert_at: null,
+      }),
+      check: check(false),
+      settings: settings({ repeat_reminder_minutes: 0 }),
+      now,
+    });
+
+    expect(result.alert).toBe('down');
   });
 
   it('recovers and closes the incident', () => {

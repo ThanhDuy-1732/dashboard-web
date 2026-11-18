@@ -82,7 +82,6 @@ export function evaluateCheck(input: {
   if (previous?.state !== 'down' && status.consecutive_failures >= settings.failure_threshold) {
     status.state = 'down';
     status.last_down_at = now;
-    status.last_down_alert_at = now;
     incident = 'open';
     if (alertsOn) alert = 'down';
   } else if (previous?.state === 'down') {
@@ -94,9 +93,10 @@ export function evaluateCheck(input: {
       (!status.last_down_alert_at ||
         now.getTime() - new Date(status.last_down_alert_at).getTime() >= repeat * 60 * 1000);
 
-    if (alertsOn && reminderDue) {
+    if (alertsOn && !status.last_down_alert_at) {
+      alert = 'down';
+    } else if (alertsOn && reminderDue) {
       alert = 'down-reminder';
-      status.last_down_alert_at = now;
     }
   }
 

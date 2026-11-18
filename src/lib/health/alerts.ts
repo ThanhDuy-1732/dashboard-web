@@ -82,6 +82,23 @@ export function formatAlert(
 
 type ChannelResult = 'sent' | 'skipped' | 'failed';
 
+export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('timeout')), ms);
+
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
 export async function deliverAlert(
   alert: HealthAlert,
   settings: SettingsRow,
@@ -89,10 +106,12 @@ export async function deliverAlert(
     telegramBotToken?: string;
     resendApiKey?: string;
     alertFromEmail: string;
+    alertTimeoutMs?: number;
   },
 ): Promise<{ telegram: ChannelResult; email: ChannelResult }> {
   const siteUrl = getServerEnv().NEXT_PUBLIC_SITE_URL;
   const { subject, text } = formatAlert(alert, siteUrl);
+  const timeoutMs = env.alertTimeoutMs ?? 10_000;
   let telegram: ChannelResult = 'skipped';
   let email: ChannelResult = 'skipped';
   const jobs: Promise<void>[] = [];
@@ -108,6 +127,7 @@ export async function deliverAlert(
               method: 'POST',
               headers: { 'content-type': 'application/json' },
               body: JSON.stringify({ chat_id: settings.telegram_chat_id, text }),
+              signal: AbortSignal.timeout(timeoutMs),
             },
           );
 
@@ -126,12 +146,15 @@ export async function deliverAlert(
       (async () => {
         try {
           const resend = new Resend(env.resendApiKey);
-          const result = await resend.emails.send({
-            from: env.alertFromEmail,
-            to: settings.email_recipients,
-            subject,
-            text,
-          });
+          const result = await withTimeout(
+            resend.emails.send({
+              from: env.alertFromEmail,
+              to: settings.email_recipients,
+              subject,
+              text,
+            }),
+            timeoutMs,
+          );
 
           if (result.error) throw new Error(result.error.message);
         } catch (error) {

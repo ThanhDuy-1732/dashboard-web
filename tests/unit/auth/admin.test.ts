@@ -7,6 +7,7 @@ import {
   verifyPassword,
   verifySessionToken,
 } from '@/lib/auth/session';
+import { isLoginLocked, loginIpHash } from '@/lib/auth/login';
 
 const secret = new TextEncoder().encode(process.env.SESSION_SECRET);
 
@@ -40,6 +41,21 @@ describe('adminGate', () => {
   it('allows public paths', () => {
     expect(adminGate({ pathname: '/', hasValidSession: false })).toBe('allow');
     expect(adminGate({ pathname: '/api/go/x', hasValidSession: false })).toBe('allow');
+  });
+});
+
+describe('login protection', () => {
+  it('locks after ten failures', () => {
+    expect(isLoginLocked(9)).toBe(false);
+    expect(isLoginLocked(10)).toBe(true);
+  });
+
+  it('hashes the first forwarded ip', () => {
+    const first = loginIpHash('203.0.113.5, 10.0.0.1', 'salt');
+    const second = loginIpHash('203.0.113.5', 'salt');
+
+    expect(first).toBe(second);
+    expect(first).toMatch(/^[a-f0-9]{64}$/);
   });
 });
 

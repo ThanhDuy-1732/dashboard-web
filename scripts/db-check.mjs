@@ -23,8 +23,10 @@ const expected = {
   settings: [
     'id', 'telegram_chat_id', 'email_recipients', 'failure_threshold',
     'slow_threshold_ms', 'alerts_enabled', 'notify_recovery',
-    'repeat_reminder_minutes', 'health_run_locked_at', 'last_cleanup_at', 'updated_at',
+    'repeat_reminder_minutes', 'health_run_locked_at', 'health_run_token',
+    'last_cleanup_at', 'updated_at',
   ],
+  login_attempts: ['id', 'ip_hash', 'attempted_at'],
   schema_migrations: ['name', 'applied_at'],
 };
 

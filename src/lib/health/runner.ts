@@ -81,16 +81,14 @@ export async function runHealthChecks(
           target: target.target,
         });
 
-        if (evaluation.incident === 'open') {
+        if (evaluation.status.state === 'down') {
           await deps.openIncident({
             app_id: target.appId,
             target: target.target,
             started_at: checkedAt,
             first_error: check.error,
           });
-        }
-
-        if (evaluation.incident === 'close') {
+        } else if (evaluation.status.state === 'up') {
           await deps.closeOpenIncident(target.appId, target.target, checkedAt);
         }
 
@@ -109,6 +107,15 @@ export async function runHealthChecks(
               at: checkedAt,
               downtimeMs,
             });
+
+            if (evaluation.alert === 'down' || evaluation.alert === 'down-reminder') {
+              await deps.upsertStatus({
+                ...evaluation.status,
+                last_down_alert_at: checkedAt,
+                app_id: target.appId,
+                target: target.target,
+              });
+            }
           } catch (error) {
             console.error('health alert delivery failed', error);
           }

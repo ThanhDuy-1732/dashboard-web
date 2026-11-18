@@ -36,7 +36,7 @@ cp .env.example .env.local
 | `DATABASE_URL` | Chuỗi kết nối Neon, dùng host `-pooler`, có `sslmode=require` |
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3000` khi local, domain thật khi deploy |
 | `NEXT_PUBLIC_HUB_NAME` | Tên hiển thị trên hub |
-| `ADMIN_PASSWORD` | Mật khẩu admin; `change-me-now` bị chặn ở production |
+| `ADMIN_PASSWORD` | Mật khẩu admin, tối thiểu 12 ký tự; placeholder bị chặn ở production |
 | `SESSION_SECRET` | Chuỗi ngẫu nhiên ≥32 ký tự |
 | `CRON_SECRET` | Chuỗi ngẫu nhiên ≥32 ký tự, dùng cho cron |
 | `IP_HASH_SALT` | Chuỗi ngẫu nhiên ≥16 ký tự |
@@ -61,7 +61,7 @@ npm run icons
 npm run dev
 ```
 
-Mở `http://localhost:3000`, đăng nhập `/admin/login`.
+Mở `http://localhost:3000`, đăng nhập `/admin/login`. Sai mật khẩu 10 lần trong 15 phút sẽ bị khóa tạm 15 phút.
 
 ## 4. Neon
 
@@ -137,7 +137,7 @@ Kiểm tra:
 - **URL ứng dụng**: URL công khai, cũng là mục tiêu health check `app`.
 - **Supabase ref**: phần `<ref>` trong `https://<ref>.supabase.co`; hub kiểm tra `https://<ref>.supabase.co/auth/v1/health`.
 - **URL health Supabase**: chỉ điền nếu muốn override endpoint mặc định.
-- **HTTP mong đợi**: mặc định 200; một số app trả 204/301 thì đổi.
+- **HTTP mong đợi**: mặc định 200; một số app trả 204/301 thì đổi. Trường này chỉ áp dụng cho target **Ứng dụng**; target **Supabase** luôn mong đợi 200.
 - Bật/tắt giám sát từng mục tiêu.
 
 Sắp xếp bằng nút kéo `⠿`; thay đổi có hiệu lực ngay.
@@ -167,7 +167,7 @@ Sắp xếp bằng nút kéo `⠿`; thay đổi có hiệu lực ngay.
 
 - `checks`: giữ 30 ngày.
 - `click_events`: giữ 90 ngày.
-- Cleanup chạy tối đa một lần/24h sau một health run thành công; lỗi cleanup không làm fail run.
+- Cleanup chạy tối đa một lần/24h sau một health run thành công; lỗi cleanup không làm fail run. Lần đăng nhập sai cũ hơn 1 ngày cũng bị dọn.
 - Backup: dùng tính năng backup/branch của Neon nếu cần.
 
 ## 14. Checklist nghiệm thu

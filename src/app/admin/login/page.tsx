@@ -9,6 +9,7 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const hasError = params.error === '1';
+  const isLocked = params.error === 'locked';
 
   return (
     <main className="flex min-h-dvh items-center justify-center bg-paper px-5 py-12 text-ink">
@@ -36,6 +37,11 @@ export default async function LoginPage({
         {hasError ? (
           <p role="alert" className="mt-3 text-sm text-red-700">
             Sai mật khẩu.
+          </p>
+        ) : null}
+        {isLocked ? (
+          <p role="alert" className="mt-3 text-sm text-red-700">
+            Quá nhiều lần thử. Thử lại sau 15 phút.
           </p>
         ) : null}
 

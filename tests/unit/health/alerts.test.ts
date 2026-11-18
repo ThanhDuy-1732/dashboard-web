@@ -8,7 +8,7 @@ vi.mock('resend', () => ({
   },
 }));
 
-import { deliverAlert, formatAlert } from '@/lib/health/alerts';
+import { deliverAlert, formatAlert, withTimeout } from '@/lib/health/alerts';
 import type { AppRow, SettingsRow } from '@/lib/db/types';
 import type { HealthAlert } from '@/lib/health/types';
 
@@ -48,6 +48,7 @@ function settings(overrides: Partial<SettingsRow> = {}): SettingsRow {
     notify_recovery: true,
     repeat_reminder_minutes: 0,
     health_run_locked_at: null,
+    health_run_token: null,
     last_cleanup_at: null,
     updated_at: at,
     ...overrides,
@@ -104,6 +105,20 @@ describe('formatAlert', () => {
   });
 });
 
+describe('withTimeout', () => {
+  it('rejects when the promise takes too long', async () => {
+    vi.useFakeTimers();
+    try {
+      const promise = withTimeout(new Promise(() => {}), 10);
+      const assertion = expect(promise).rejects.toThrow('timeout');
+      await vi.advanceTimersByTimeAsync(20);
+      await assertion;
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
 describe('deliverAlert', () => {
   beforeEach(() => {
     sendMock.mockReset();
@@ -143,6 +158,7 @@ describe('deliverAlert', () => {
     expect(body.chat_id).toBe('123');
     expect(body.text).toContain('Blog');
     expect(body).not.toHaveProperty('parse_mode');
+    expect(init?.signal).toBeInstanceOf(AbortSignal);
   });
 
   it('marks Telegram failed without throwing', async () => {

@@ -21,6 +21,7 @@ import {
 import { listClicksSince } from '@/lib/db/clicks';
 import type { CheckRow, HealthState, Target } from '@/lib/db/types';
 import { formatDateTime, formatLatency, formatUptime } from '@/lib/format';
+import { isMonitoringPaused } from '@/lib/health/targets';
 
 export const instant = false;
 
@@ -234,7 +235,7 @@ export default async function AppDetailPage({
               Đang ẩn
             </span>
           ) : null}
-          {app.monitoring_paused_until ? (
+          {isMonitoringPaused(app, now) ? (
             <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-amber-800">
               Tạm dừng giám sát
             </span>

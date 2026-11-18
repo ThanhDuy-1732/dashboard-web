@@ -13,8 +13,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
-  const claimed = await claimHealthRun();
-  if (!claimed) {
+  const token = await claimHealthRun();
+  if (!token) {
     return NextResponse.json({ skipped: true }, { status: 202 });
   }
 
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'health run failed' }, { status: 500 });
   } finally {
     try {
-      await releaseHealthRun();
+      await releaseHealthRun(token);
     } catch (error) {
       console.error('failed to release health run lock', error);
     }

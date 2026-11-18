@@ -39,6 +39,7 @@ function settings(overrides: Partial<SettingsRow> = {}): SettingsRow {
     notify_recovery: true,
     repeat_reminder_minutes: 0,
     health_run_locked_at: null,
+    health_run_token: null,
     last_cleanup_at: null,
     updated_at: now,
     ...overrides,
@@ -112,7 +113,7 @@ describe('runHealthChecks', () => {
     );
   });
 
-  it('opens one incident and sends one alert for a sustained outage', async () => {
+  it('sends one alert and reconciles the incident for a sustained outage', async () => {
     const deps = makeDeps({
       listAppsToCheck: async () => [app({ monitor_supabase: false })],
       ping: async () => check(false),
@@ -123,11 +124,31 @@ describe('runHealthChecks', () => {
     await runHealthChecks(deps);
     await runHealthChecks(deps);
 
-    expect(deps.openIncident).toHaveBeenCalledTimes(1);
+    expect(deps.openIncident).toHaveBeenCalled();
     expect(deps.notify).toHaveBeenCalledTimes(1);
     expect(deps.notify).toHaveBeenCalledWith(
       expect.objectContaining({ kind: 'down', target: 'app' }),
     );
+  });
+
+  it('retries a down alert that failed to deliver', async () => {
+    let sends = 0;
+    const deps = makeDeps({
+      listAppsToCheck: async () => [app({ monitor_supabase: false })],
+      ping: async () => check(false),
+      notify: vi.fn(async () => {
+        sends += 1;
+        if (sends === 1) throw new Error('telegram down');
+      }),
+    });
+
+    await runHealthChecks(deps);
+    await runHealthChecks(deps);
+    await runHealthChecks(deps);
+    await runHealthChecks(deps);
+    await runHealthChecks(deps);
+
+    expect(sends).toBe(2);
   });
 
   it('sends a recovery alert with downtime', async () => {

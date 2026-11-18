@@ -27,6 +27,7 @@ import {
 } from '@/app/admin/(protected)/apps/actions';
 import { StatusBadge } from '@/components/admin/status-badge';
 import type { AppRow, AppStatusRow, Target } from '@/lib/db/types';
+import { isMonitoringPaused } from '@/lib/health/targets';
 
 type Props = {
   apps: AppRow[];
@@ -54,6 +55,8 @@ function Row({
   style?: React.CSSProperties;
   isDragging?: boolean;
 }) {
+  const paused = isMonitoringPaused(app, new Date());
+
   return (
     <div
       style={style}
@@ -76,7 +79,7 @@ function Row({
                   Đang ẩn
                 </span>
               ) : null}
-              {app.monitoring_paused_until ? (
+              {paused ? (
                 <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs text-amber-800">
                   Tạm dừng giám sát
                 </span>
@@ -117,7 +120,7 @@ function Row({
             Supabase: {app.monitor_supabase ? 'đang bật' : 'đang tắt'}
           </button>
 
-          {app.monitoring_paused_until ? (
+          {paused ? (
             <button
               type="button"
               onClick={() => void resumeMonitoringAction(app.id)}

@@ -32,7 +32,7 @@ function request(value?: string) {
 describe('POST /api/cron/health', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(claimHealthRun).mockResolvedValue(true);
+    vi.mocked(claimHealthRun).mockResolvedValue('token-1');
     vi.mocked(runHealthChecks).mockResolvedValue({ checked: 2, skipped: false });
   });
 
@@ -49,7 +49,7 @@ describe('POST /api/cron/health', () => {
   });
 
   it('returns 202 when another run holds the lock', async () => {
-    vi.mocked(claimHealthRun).mockResolvedValue(false);
+    vi.mocked(claimHealthRun).mockResolvedValue(null);
 
     const response = await POST(request(secret));
 
@@ -65,6 +65,7 @@ describe('POST /api/cron/health', () => {
     expect(await response.json()).toEqual({ checked: 2, skipped: false });
     expect(maybeCleanup).toHaveBeenCalledOnce();
     expect(releaseHealthRun).toHaveBeenCalledOnce();
+    expect(releaseHealthRun).toHaveBeenCalledWith('token-1');
   });
 
   it('returns 500 but still releases the lock when the run throws', async () => {
@@ -74,5 +75,6 @@ describe('POST /api/cron/health', () => {
 
     expect(response.status).toBe(500);
     expect(releaseHealthRun).toHaveBeenCalledOnce();
+    expect(releaseHealthRun).toHaveBeenCalledWith('token-1');
   });
 });

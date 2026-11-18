@@ -8,6 +8,7 @@ import { listAllApps } from '@/lib/db/apps';
 import { getStatuses, listChecksSince } from '@/lib/db/checks';
 import { listClicksSince } from '@/lib/db/clicks';
 import type { CheckRow, HealthState } from '@/lib/db/types';
+import { isMonitoringPaused } from '@/lib/health/targets';
 
 export const instant = false;
 
@@ -129,7 +130,7 @@ export default async function AdminOverviewPage() {
             const supabaseStatus = statusMap.get(`${app.id}:supabase`)?.state ?? 'unknown';
             const appLatency = latestChecks.get(`${app.id}:app`)?.latency_ms ?? null;
             const supabaseLatency = latestChecks.get(`${app.id}:supabase`)?.latency_ms ?? null;
-            const paused = Boolean(app.monitoring_paused_until);
+            const paused = isMonitoringPaused(app, now);
             const count = counts.get(app.id) ?? 0;
 
             return (

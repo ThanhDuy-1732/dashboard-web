@@ -13,7 +13,7 @@ export async function updateSettings(input: SettingsInput): Promise<SettingsRow>
   const [row] = await sql<SettingsRow[]>`
     update settings set
       telegram_chat_id = ${input.telegramChatId},
-      email_recipients = ${sql.array(input.emailRecipients)},
+      email_recipients = ${input.emailRecipients}::text[],
       failure_threshold = ${input.failureThreshold},
       slow_threshold_ms = ${input.slowThresholdMs},
       alerts_enabled = ${input.alertsEnabled},
@@ -26,17 +26,17 @@ export async function updateSettings(input: SettingsInput): Promise<SettingsRow>
   return row;
 }
 
-export async function claimHealthRun(staleAfterSeconds = 30): Promise<boolean> {
+export async function claimHealthRun(staleAfterSeconds = 120): Promise<string | null> {
   const sql = getSql();
-  const [row] = await sql<{ claimed: boolean }[]>`
-    select claim_health_run(${staleAfterSeconds}) as claimed
+  const [row] = await sql<{ token: string | null }[]>`
+    select claim_health_run(${staleAfterSeconds}) as token
   `;
-  return row?.claimed ?? false;
+  return row?.token ?? null;
 }
 
-export async function releaseHealthRun(): Promise<void> {
+export async function releaseHealthRun(token: string): Promise<void> {
   const sql = getSql();
-  await sql`select release_health_run()`;
+  await sql`select release_health_run(${token}::uuid)`;
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -49,6 +49,7 @@ export async function cleanupOldData(now: Date): Promise<void> {
   await sql.begin(async (tx) => {
     await tx`delete from checks where checked_at < ${checksBefore}`;
     await tx`delete from click_events where clicked_at < ${clicksBefore}`;
+    await tx`delete from login_attempts where attempted_at < ${new Date(now.getTime() - DAY_MS)}`;
     await tx`update settings set last_cleanup_at = ${now} where id = 1`;
   });
 }
