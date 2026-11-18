@@ -1,4 +1,10 @@
 import '@testing-library/jest-dom/vitest';
+import { cleanup } from '@testing-library/react';
+import { afterEach } from 'vitest';
+
+afterEach(() => {
+  cleanup();
+});
 
 process.env.DATABASE_URL ??= 'postgres://test:test@localhost:5432/test';
 process.env.NEXT_PUBLIC_SITE_URL ??= 'https://hub.test';
