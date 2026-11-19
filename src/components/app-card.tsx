@@ -1,9 +1,38 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import type { PublicApp } from '@/lib/db/types';
 
+function useStandaloneDisplay(): boolean {
+  const [standalone, setStandalone] = useState(false);
+
+  useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return;
+
+    const media = window.matchMedia('(display-mode: standalone)');
+    const update = () => {
+      const iosStandalone =
+        'standalone' in window.navigator &&
+        Boolean((window.navigator as Navigator & { standalone?: boolean }).standalone);
+      setStandalone(media.matches || iosStandalone);
+    };
+
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
+  return standalone;
+}
+
 export function AppCard({ app }: { app: PublicApp }) {
+  const standalone = useStandaloneDisplay();
+
   return (
     <a
       href={`/api/go/${app.slug}`}
+      target={standalone ? undefined : '_blank'}
+      rel={standalone ? undefined : 'noopener noreferrer'}
       className="group flex items-center gap-4 rounded-xl border border-line bg-card px-4 py-4 transition-colors hover:border-moss focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
     >
       {app.icon_url ? (
