@@ -113,7 +113,7 @@ export async function reorderApps(ids: string[]): Promise<void> {
 
 export async function listAppsToCheck(now: Date): Promise<AppRow[]> {
   const sql = getSql();
-  return sql<AppRow[]>`
+  const rows = await sql<AppRow[]>`
     select *,
       coalesce(health_method, 'GET') as health_method,
       coalesce(health_headers, '{}'::jsonb) as health_headers
@@ -122,4 +122,12 @@ export async function listAppsToCheck(now: Date): Promise<AppRow[]> {
       and (monitor_app = true or monitor_supabase = true)
     order by sort_order asc, name asc
   `;
+
+  return rows.map((row) => ({
+    ...row,
+    health_headers:
+      typeof row.health_headers === 'string'
+        ? (JSON.parse(row.health_headers || '{}') as Record<string, string>)
+        : (row.health_headers ?? {}),
+  }));
 }
