@@ -16,6 +16,8 @@ export function targetsForApp(app: AppRow, now: Date): HealthTarget[] {
     slug: app.slug,
     name: app.name,
     timeoutMs: app.timeout_ms,
+    method: app.health_method,
+    headers: app.health_headers,
   };
 
   const targets: HealthTarget[] = [];

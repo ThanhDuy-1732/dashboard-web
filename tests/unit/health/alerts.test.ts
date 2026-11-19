@@ -31,6 +31,8 @@ function app(overrides: Partial<AppRow> = {}): AppRow {
     monitoring_paused_until: null,
     expected_status: 200,
     timeout_ms: 5000,
+    health_method: 'GET',
+    health_headers: {},
     created_at: at,
     updated_at: at,
     ...overrides,

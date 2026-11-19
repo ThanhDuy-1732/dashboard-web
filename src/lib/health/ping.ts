@@ -8,10 +8,10 @@ export async function pingTarget(
 
   try {
     const response = await fetchImpl(target.url, {
-      method: 'GET',
+      method: target.method ?? 'GET',
       redirect: 'follow',
       cache: 'no-store',
-      headers: { 'user-agent': 'EcosystemHubHealth/1.0' },
+      headers: { 'user-agent': 'EcosystemHubHealth/1.0', ...target.headers },
       signal: AbortSignal.timeout(target.timeoutMs),
     });
 

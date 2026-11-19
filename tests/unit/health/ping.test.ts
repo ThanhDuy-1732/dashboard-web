@@ -11,6 +11,8 @@ const target: HealthTarget = {
   url: 'https://blog.example.com',
   expectedStatus: 200,
   timeoutMs: 5000,
+  method: 'GET',
+  headers: {},
 };
 
 describe('pingTarget', () => {
@@ -34,6 +36,22 @@ describe('pingTarget', () => {
     expect(result.ok).toBe(false);
     expect(result.statusCode).toBe(503);
     expect(result.error).toBe('HTTP 503');
+  });
+
+  it('uses the configured method and headers', async () => {
+    const fetchImpl = vi.fn(async () => new Response(null, { status: 200 }));
+
+    await pingTarget(
+      { ...target, method: 'POST', headers: { authorization: 'Bearer token' } },
+      fetchImpl,
+    );
+
+    const init = fetchImpl.mock.calls[0][1];
+    expect(init?.method).toBe('POST');
+    expect(init?.headers).toMatchObject({
+      'user-agent': 'EcosystemHubHealth/1.0',
+      authorization: 'Bearer token',
+    });
   });
 
   it('records network errors', async () => {

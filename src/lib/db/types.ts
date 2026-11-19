@@ -17,6 +17,8 @@ export type AppRow = {
   monitoring_paused_until: Date | null;
   expected_status: number;
   timeout_ms: number;
+  health_method: string;
+  health_headers: Record<string, string>;
   created_at: Date;
   updated_at: Date;
 };

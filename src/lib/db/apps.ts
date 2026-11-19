@@ -114,7 +114,10 @@ export async function reorderApps(ids: string[]): Promise<void> {
 export async function listAppsToCheck(now: Date): Promise<AppRow[]> {
   const sql = getSql();
   return sql<AppRow[]>`
-    select * from apps
+    select *,
+      coalesce(health_method, 'GET') as health_method,
+      coalesce(health_headers, '{}'::jsonb) as health_headers
+    from apps
     where (monitoring_paused_until is null or monitoring_paused_until <= ${now})
       and (monitor_app = true or monitor_supabase = true)
     order by sort_order asc, name asc

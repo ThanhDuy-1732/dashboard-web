@@ -21,6 +21,8 @@ function app(overrides: Partial<AppRow> = {}): AppRow {
     monitoring_paused_until: null,
     expected_status: 200,
     timeout_ms: 5000,
+    health_method: 'GET',
+    health_headers: {},
     created_at: now,
     updated_at: now,
     ...overrides,
@@ -38,6 +40,8 @@ describe('targetsForApp', () => {
         url: 'https://blog.example.com',
         expectedStatus: 200,
         timeoutMs: 5000,
+        method: 'GET',
+        headers: {},
       },
       {
         appId: 'app-1',
@@ -47,6 +51,8 @@ describe('targetsForApp', () => {
         url: 'https://abcdefghijklmnopqrst.supabase.co/auth/v1/health',
         expectedStatus: 200,
         timeoutMs: 5000,
+        method: 'GET',
+        headers: {},
       },
     ]);
   });
@@ -86,6 +92,20 @@ describe('targetsForApp', () => {
         now,
       ),
     ).toHaveLength(2);
+  });
+
+  it('carries custom method and headers into targets', () => {
+    const targets = targetsForApp(
+      app({
+        health_method: 'POST',
+        health_headers: { authorization: 'Bearer token' },
+        url: 'https://api.example.com',
+      }),
+      now,
+    );
+
+    expect(targets[0].method).toBe('POST');
+    expect(targets[0].headers).toEqual({ authorization: 'Bearer token' });
   });
 
   it('reports whether monitoring is currently paused', () => {

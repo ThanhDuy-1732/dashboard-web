@@ -15,6 +15,8 @@ export type HealthTarget = {
   url: string;
   expectedStatus: number;
   timeoutMs: number;
+  method: string;
+  headers: Record<string, string>;
 };
 
 export type HealthAlert = {
