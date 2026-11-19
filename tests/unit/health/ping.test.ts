@@ -17,7 +17,10 @@ const target: HealthTarget = {
 
 describe('pingTarget', () => {
   it('records a successful response', async () => {
-    const fetchImpl = vi.fn(async () => new Response(null, { status: 200 }));
+    const fetchImpl = vi.fn(
+      async (_url: RequestInfo | URL, _init?: RequestInit) =>
+        new Response(null, { status: 200 }),
+    );
 
     const result = await pingTarget(target, fetchImpl);
 
@@ -39,14 +42,17 @@ describe('pingTarget', () => {
   });
 
   it('uses the configured method and headers', async () => {
-    const fetchImpl = vi.fn(async () => new Response(null, { status: 200 }));
+    const fetchImpl = vi.fn(
+      async (_url: RequestInfo | URL, init?: RequestInit) =>
+        new Response(null, { status: 200 }),
+    );
 
     await pingTarget(
       { ...target, method: 'POST', headers: { authorization: 'Bearer token' } },
       fetchImpl,
     );
 
-    const init = fetchImpl.mock.calls[0][1];
+    const init = fetchImpl.mock.calls[0]?.[1];
     expect(init?.method).toBe('POST');
     expect(init?.headers).toMatchObject({
       'user-agent': 'EcosystemHubHealth/1.0',
