@@ -33,6 +33,7 @@ export type AdminAttentionItem = {
   appId: string;
   appName: string;
   target: Target;
+  state: 'down' | 'unknown';
   consecutiveFailures: number;
   lastCheckAt: string | null;
   lastError: string | null;
@@ -148,10 +149,7 @@ export function buildAdminOverview(
     targets: { up: 0, down: 0, unknown: 0, off: 0 },
     monitoredTargets: 0,
   };
-  const attention: Array<{
-    item: AdminAttentionItem;
-    state: TargetDisplayState;
-  }> = [];
+  const attention: AdminAttentionItem[] = [];
   const appViews: AdminAppView[] = [];
   let maxLastCheckAt: Date | null = null;
   let pausedAppCount = 0;
@@ -191,15 +189,13 @@ export function buildAdminOverview(
 
         if (view.state === 'down' || view.state === 'unknown') {
           attention.push({
-            item: {
-              appId: app.id,
-              appName: app.name,
-              target,
-              consecutiveFailures: view.consecutiveFailures,
-              lastCheckAt: view.lastCheckAt,
-              lastError: view.lastError,
-            },
             state: view.state,
+            appId: app.id,
+            appName: app.name,
+            target,
+            consecutiveFailures: view.consecutiveFailures,
+            lastCheckAt: view.lastCheckAt,
+            lastError: view.lastError,
           });
         }
       }
@@ -228,10 +224,9 @@ export function buildAdminOverview(
   counts.monitoredTargets =
     counts.targets.up + counts.targets.down + counts.targets.unknown;
 
-  attention.sort(({ item: a, state: aState }, { item: b, state: bState }) => {
+  attention.sort((a, b) => {
     return (
-      targetStateSeverity[aState] -
-        targetStateSeverity[bState] ||
+      targetStateSeverity[a.state] - targetStateSeverity[b.state] ||
       b.consecutiveFailures - a.consecutiveFailures ||
       a.appName.localeCompare(b.appName)
     );
@@ -245,7 +240,7 @@ export function buildAdminOverview(
 
   return {
     counts,
-    attention: attention.map(({ item }) => item),
+    attention,
     apps: appViews,
     lastCheckAt,
     staleMinutes,

@@ -238,6 +238,25 @@ describe('buildAdminOverview', () => {
       'down-z',
       'unknown',
     ]);
+    expect(model.attention[0].state).toBe('down');
+    expect(model.attention[3].state).toBe('unknown');
+  });
+
+  it('preserves unknown attention state when consecutive failures are nonzero', () => {
+    const app = makeApp({ monitor_supabase: false });
+    const status = makeStatus({
+      state: 'unknown',
+      consecutive_failures: 1,
+    });
+
+    const model = buildAdminOverview([app], [status], [], now);
+
+    expect(model.attention).toEqual([
+      expect.objectContaining({
+        state: 'unknown',
+        consecutiveFailures: 1,
+      }),
+    ]);
   });
 
   it('includes hidden apps and counts only monitored targets', () => {
