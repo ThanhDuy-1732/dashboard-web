@@ -582,9 +582,10 @@ git commit -m "feat: add admin PWA install, badge and connectivity UI"
 - Thay `text-ink/40…` bằng `text-muted`; label form dùng `text-ink`; input focus ring; tap target ≥44px.
 - Apps page dùng `AdminPageHeader` + `AdminBadge` (đã thêm ở Task 11) và giữ bảng hiện có, chỉ đổi token/contrast.
 
-- [ ] **Step 1: Add component assertions**
+- [ ] **Step 1: Run the existing component tests**
 
-Nếu chưa có, thêm test cho app detail/settings render `PauseMenu`/`LogoutButton` bằng cách mock DB/page dependencies; nếu async page khó test, thêm test component trực tiếp và ghi chú manual check.
+Run: `npm test -- tests/unit/admin/pause-menu.test.tsx tests/unit/admin/logout-button.test.tsx`
+Expected: PASS. Hai component đã được test ở Task 5/9; task này chỉ nối vào page, kiểm tra bằng manual check ở Task 13.
 
 - [ ] **Step 2: Implement**
 
