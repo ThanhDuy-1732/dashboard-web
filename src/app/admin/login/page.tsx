@@ -12,7 +12,7 @@ export default async function LoginPage({
   const isLocked = params.error === 'locked';
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-paper px-5 py-12 text-ink">
+    <main className="admin-theme flex min-h-dvh items-center justify-center bg-paper px-5 py-12 text-ink">
       <form
         action={loginAction}
         className="w-full max-w-sm rounded-2xl border border-line bg-card p-7"

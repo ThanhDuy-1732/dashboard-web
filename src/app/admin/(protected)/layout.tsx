@@ -12,7 +12,7 @@ export default async function AdminLayout({
   await requireAdmin();
 
   return (
-    <div className="min-h-dvh bg-paper text-ink">
+    <div className="admin-theme min-h-dvh bg-paper text-ink">
       <header className="border-b border-line bg-card">
         <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-8">
           <Link href="/admin" className="font-display text-lg font-semibold tracking-tight">
