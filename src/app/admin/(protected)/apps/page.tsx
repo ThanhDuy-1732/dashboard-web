@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { connection } from 'next/server';
 import { AppsTable } from '@/components/admin/apps-table';
 import { listAllApps } from '@/lib/db/apps';
 import { getStatuses } from '@/lib/db/checks';
@@ -6,6 +7,7 @@ import { getStatuses } from '@/lib/db/checks';
 export const instant = false;
 
 export default async function AppsPage() {
+  await connection();
   const [apps, statuses] = await Promise.all([listAllApps(), getStatuses()]);
 
   return (

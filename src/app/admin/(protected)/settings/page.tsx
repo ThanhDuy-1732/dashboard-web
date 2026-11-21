@@ -1,9 +1,11 @@
+import { connection } from 'next/server';
 import { SettingsForm } from '@/components/admin/settings-form';
 import { getSettings } from '@/lib/db/settings';
 
 export const instant = false;
 
 export default async function SettingsPage() {
+  await connection();
   const settings = await getSettings();
 
   return (
