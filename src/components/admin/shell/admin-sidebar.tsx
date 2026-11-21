@@ -10,7 +10,7 @@ export function AdminSidebar() {
         href="/admin"
         className="mb-9 rounded-md px-3 font-display text-xl font-semibold tracking-tight text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
       >
-        Quản trị
+        Ecosystem
       </Link>
       <nav
         aria-label="Điều hướng quản trị"
@@ -24,7 +24,9 @@ export function AdminSidebar() {
           />
         ))}
       </nav>
-      <LogoutButton />
+      <div className="mt-6 border-t border-white/15 pt-4">
+        <LogoutButton variant="sidebar" />
+      </div>
     </aside>
   );
 }

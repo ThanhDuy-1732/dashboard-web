@@ -22,6 +22,9 @@ vi.mock('@/app/admin/login/actions', () => ({
 
 import AdminLayout from '@/app/admin/(protected)/layout';
 import LoginPage from '@/app/admin/login/page';
+import { LogoutButton } from '@/components/admin/logout-button';
+import { AdminShell } from '@/components/admin/shell/admin-shell';
+import { AdminSidebar } from '@/components/admin/shell/admin-sidebar';
 
 type ProtectedAdminContentProps = { children: ReactNode };
 type ProtectedAdminContent = (
@@ -64,5 +67,44 @@ describe('admin theme scope', () => {
     render(await LoginPage({ searchParams: Promise.resolve({}) }));
 
     expect(screen.getByRole('main')).toHaveClass('admin-theme');
+  });
+
+  it('uses a 1280px content width and 16px mobile gutters', () => {
+    render(
+      <AdminShell>
+        <div>Content</div>
+      </AdminShell>,
+    );
+
+    expect(screen.getByRole('main')).toHaveClass('max-w-7xl', 'px-4', 'sm:px-8');
+    expect(screen.getByRole('main')).not.toHaveClass('max-w-5xl', 'px-5');
+  });
+
+  it('uses a light default logout style without sidebar chrome', () => {
+    render(<LogoutButton />);
+
+    const button = screen.getByRole('button', { name: 'Đăng xuất' });
+    const form = button.closest('form');
+
+    expect(form).not.toHaveClass('mt-6', 'border-t', 'border-white/15', 'pt-4');
+    expect(button).toHaveClass('text-muted', 'border-line', 'hover:bg-paper');
+    expect(button).not.toHaveClass('text-white/70', 'focus-visible:outline-white');
+  });
+
+  it('uses Ecosystem branding and keeps dark logout chrome in the sidebar', () => {
+    render(<AdminSidebar />);
+
+    expect(screen.getByRole('link', { name: 'Ecosystem' })).toHaveAttribute(
+      'href',
+      '/admin',
+    );
+    const button = screen.getByRole('button', { name: 'Đăng xuất' });
+    expect(button).toHaveClass('text-white/70', 'focus-visible:outline-white');
+    expect(button.closest('form')?.parentElement).toHaveClass(
+      'mt-6',
+      'border-t',
+      'border-white/15',
+      'pt-4',
+    );
   });
 });
