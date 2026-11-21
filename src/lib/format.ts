@@ -8,6 +8,24 @@ export function formatLatency(ms: number | null): string {
   return `${Math.round(ms)} ms`;
 }
 
+export function formatRelativeTime(value: string | null, now: Date): string {
+  if (value === null) return '—';
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+
+  const diffMs = now.getTime() - date.getTime();
+  if (diffMs < 60_000) return 'vừa xong';
+
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 60) return `${minutes} phút trước`;
+
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} giờ trước`;
+
+  return `${Math.floor(hours / 24)} ngày trước`;
+}
+
 export function formatDateTime(value: string | Date): string {
   const date = typeof value === 'string' ? new Date(value) : value;
   const parts = new Intl.DateTimeFormat('en-GB', {

@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { formatDateTime, formatLatency, formatUptime } from '@/lib/format';
+import {
+  formatDateTime,
+  formatLatency,
+  formatRelativeTime,
+  formatUptime,
+} from '@/lib/format';
 
 describe('formatDateTime', () => {
   it('formats in Vietnam time', () => {
@@ -25,5 +30,29 @@ describe('formatLatency', () => {
 
   it('rounds milliseconds', () => {
     expect(formatLatency(123.4)).toBe('123 ms');
+  });
+});
+
+describe('formatRelativeTime', () => {
+  const now = new Date('2026-11-21T12:00:00.000Z');
+
+  it('returns a dash for no value', () => {
+    expect(formatRelativeTime(null, now)).toBe('—');
+  });
+
+  it('returns "vừa xong" under a minute', () => {
+    expect(formatRelativeTime('2026-11-21T11:59:30.000Z', now)).toBe('vừa xong');
+  });
+
+  it('formats minutes', () => {
+    expect(formatRelativeTime('2026-11-21T11:55:00.000Z', now)).toBe('5 phút trước');
+  });
+
+  it('formats hours', () => {
+    expect(formatRelativeTime('2026-11-21T10:30:00.000Z', now)).toBe('1 giờ trước');
+  });
+
+  it('formats days', () => {
+    expect(formatRelativeTime('2026-11-18T12:00:00.000Z', now)).toBe('3 ngày trước');
   });
 });

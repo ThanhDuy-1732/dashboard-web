@@ -6,6 +6,23 @@
   --moss: #2f6b4f;
   --card: #fbfcf8;
   --line: #cfd9cd;
+  --muted: #475569;
+  --ok-bg: #dcfce7;
+  --ok-fg: #15803d;
+  --bad-bg: #fee2e2;
+  --bad-fg: #b91c1c;
+  --warn-bg: #fef3c7;
+  --warn-fg: #b45309;
+  --unknown-bg: #e2e8f0;
+  --unknown-fg: #475569;
+}
+
+.admin-theme {
+  --paper: #f6f8f5;
+  --ink: #0f172a;
+  --card: #ffffff;
+  --line: #dbe3dc;
+  --muted: #475569;
 }
 
 @theme inline {
@@ -14,6 +31,15 @@
   --color-moss: var(--moss);
   --color-card: var(--card);
   --color-line: var(--line);
+  --color-muted: var(--muted);
+  --color-ok-bg: var(--ok-bg);
+  --color-ok-fg: var(--ok-fg);
+  --color-bad-bg: var(--bad-bg);
+  --color-bad-fg: var(--bad-fg);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn-fg: var(--warn-fg);
+  --color-unknown-bg: var(--unknown-bg);
+  --color-unknown-fg: var(--unknown-fg);
   --font-sans: var(--font-dm-sans);
   --font-display: var(--font-bricolage);
 }
