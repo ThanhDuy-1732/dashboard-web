@@ -242,7 +242,7 @@ git commit -m "feat: add responsive admin shell"
 - Test: `tests/unit/admin/status-summary-strip.test.tsx`, `attention-list.test.tsx`
 
 **Interfaces:**
-- `StatusSummaryStrip({ counts, appCount, now })` — chips `ỔN/LỖI/CHƯA RÕ/TẠM DỪNG` theo `counts.apps`; subline `X ứng dụng · Y mục tiêu · Z/Y mục tiêu ổn`.
+- `StatusSummaryStrip({ counts, appCount })` — chips `ỔN/LỖI/CHƯA RÕ/TẠM DỪNG` theo `counts.apps`; subline `X ứng dụng · Y mục tiêu · Z/Y mục tiêu ổn`.
 - `AttentionList({ items, now, offline? })` — mỗi item link `/admin/apps/[appId]` (hoặc `<div>` khi `offline`), hiện target, pill theo `item.state` (`down`/`unknown`), số lần lỗi, lỗi gần nhất, thời gian tương đối; rỗng → `null`.
 - `AdminPageHeader({ title, description?, lastCheckAt, isStale, now, actions? })` — pill “Cập nhật X phút trước” xanh/amber.
 
