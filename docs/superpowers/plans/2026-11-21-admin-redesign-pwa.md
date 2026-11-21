@@ -148,7 +148,7 @@ git commit -m "feat: add admin status tokens and status pill"
 
 **Interfaces:**
 - Produces: `buildAdminOverview(apps: AppRow[], statuses: AppStatusRow[], checks: CheckRow[], now: Date): AdminOverviewModel`
-- Types: `TargetDisplayState = 'up' | 'down' | 'unknown' | 'off'`; `AppDisplayState = TargetDisplayState | 'paused'`; `AdminTargetView`, `AdminAppView`, `AdminAttentionItem`, `AdminOverviewCounts`, `AdminOverviewModel` đúng như spec §5.5 (thêm `allPaused`, `counts.monitoredTargets`).
+- Types: `TargetDisplayState = 'up' | 'down' | 'unknown' | 'off'`; `AppDisplayState = TargetDisplayState | 'paused'`; `AdminTargetView`, `AdminAppView`, `AdminAttentionItem` (gồm `state: 'down' | 'unknown'`), `AdminOverviewCounts`, `AdminOverviewModel` đúng như spec §5.5 (thêm `allPaused`, `counts.monitoredTargets`).
 
 - [ ] **Step 1: Write failing tests**
 
@@ -243,13 +243,13 @@ git commit -m "feat: add responsive admin shell"
 
 **Interfaces:**
 - `StatusSummaryStrip({ counts, appCount, now })` — chips `ỔN/LỖI/CHƯA RÕ/TẠM DỪNG` theo `counts.apps`; subline `X ứng dụng · Y mục tiêu · Z/Y mục tiêu ổn`.
-- `AttentionList({ items, now, offline? })` — mỗi item link `/admin/apps/[appId]` (hoặc `<div>` khi `offline`), hiện target, số lần lỗi, lỗi gần nhất, thời gian tương đối; rỗng → `null`.
+- `AttentionList({ items, now, offline? })` — mỗi item link `/admin/apps/[appId]` (hoặc `<div>` khi `offline`), hiện target, pill theo `item.state` (`down`/`unknown`), số lần lỗi, lỗi gần nhất, thời gian tương đối; rỗng → `null`.
 - `AdminPageHeader({ title, description?, lastCheckAt, isStale, now, actions? })` — pill “Cập nhật X phút trước” xanh/amber.
 
 - [ ] **Step 1: Write failing tests**
 
 Strip: counts `{apps:{up:5,down:1,unknown:0,off:0,paused:0}, targets:{...}, monitoredTargets:13}` → thấy `5`, `1`, `13 mục tiêu`, không có chip `TẠM DỪNG`; thêm paused → chip hiện.
-Attention: 2 items (down + unknown) → render đủ; item paused/off không được truyền vào; rỗng → container null.
+Attention: 2 items (down + unknown) → render đủ; item `state: 'unknown'` với `consecutiveFailures: 1` vẫn hiện pill “Chưa rõ” (không suy ra từ số lần lỗi); item paused/off không được truyền vào; rỗng → container null.
 
 - [ ] **Step 2: Run tests to verify they fail**
 

@@ -198,6 +198,7 @@ Không hiển thị nút pause trong danh sách mobile để tránh chạm nhầ
     };
     attention: Array<{
       appId; appName; target: 'app' | 'supabase';
+      state: 'down' | 'unknown';
       consecutiveFailures; lastCheckAt; lastError;
     }>;
     apps: AppView[];
