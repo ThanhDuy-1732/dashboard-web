@@ -55,6 +55,24 @@ describe('AttentionList', () => {
     expect(unknownPill?.querySelector('[aria-hidden="true"]')).not.toBeNull();
   });
 
+  it('uses the item state for the pill, not the failure count', () => {
+    const unknownWithFailure: AdminAttentionItem = {
+      appId: 'app-gamma',
+      appName: 'Gamma',
+      target: 'app',
+      state: 'unknown',
+      consecutiveFailures: 1,
+      lastCheckAt: '2026-11-21T11:59:00.000Z',
+      lastError: 'Không kết nối được',
+    };
+
+    render(<AttentionList items={[unknownWithFailure]} now={now} />);
+
+    expect(screen.getByText('Chưa rõ')).toBeInTheDocument();
+    expect(screen.queryByText('Lỗi')).not.toBeInTheDocument();
+    expect(screen.getByText(/1 lần lỗi liên tiếp/)).toBeInTheDocument();
+  });
+
   it('links each item to the app detail page', () => {
     render(<AttentionList items={items} now={now} />);
 

@@ -19,9 +19,6 @@ function AttentionItemContent({
   item: AdminAttentionItem;
   now: Date;
 }) {
-  // Attention items no longer carry a state; targets with recorded failures
-  // are shown as down, the rest as unknown.
-  const state = item.consecutiveFailures > 0 ? 'down' : 'unknown';
   const detail =
     item.consecutiveFailures > 0
       ? `${item.consecutiveFailures} lần lỗi liên tiếp`
@@ -41,7 +38,7 @@ function AttentionItemContent({
         ) : null}
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">
-        <StatusPill state={state} size="sm" />
+        <StatusPill state={item.state} size="sm" />
         <span className="text-xs text-muted">
           {formatRelativeTime(item.lastCheckAt, now)}
         </span>
