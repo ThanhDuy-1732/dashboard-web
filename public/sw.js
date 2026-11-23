@@ -22,7 +22,9 @@ self.addEventListener('activate', (event) => {
       .keys()
       .then((keys) =>
         Promise.all(
-          keys.filter((key) => key.startsWith('ecosystem-hub-')).map((key) => caches.delete(key)),
+          keys
+            .filter((key) => key.startsWith('ecosystem-hub-') && key !== CACHE)
+            .map((key) => caches.delete(key)),
         ),
       )
       .then(() => self.clients.claim()),
