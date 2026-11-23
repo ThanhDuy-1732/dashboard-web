@@ -122,11 +122,13 @@ Thứ tự từ trên xuống:
 
 1. **Top app bar**: “Tổng quan” + pill cập nhật.
 2. **Hero trạng thái**:
+   - Không có ứng dụng: hero xám “Chưa có ứng dụng nào” + CTA “Thêm ứng dụng” khi online.
+   - Tất cả app tạm dừng: hero xám “Đang tạm dừng giám sát”.
+   - Không có target giám sát: hero xám “Chưa bật giám sát”.
    - Có lỗi: nền đỏ nhạt, viền trái đỏ, chữ lớn “N ứng dụng đang lỗi”, phụ đề “X/Y ứng dụng ổn · Z mục tiêu lỗi · kiểm tra 2 phút trước”, icon tròn đỏ.
    - Không lỗi nhưng có chưa rõ: amber “Cần kiểm tra”.
    - Tất cả ổn: xanh “Tất cả hệ thống ổn định”.
-   - Dữ liệu cũ: banner amber riêng phía trên hero.
-   - Không có ứng dụng/dữ liệu: xem mục 5.10.
+   - Dữ liệu cũ: banner `role="status"` riêng phía trên hero.
 3. **“Cần chú ý”**: card cho từng target down/unknown (không phải từng app). Nội dung: app, target, số lần lỗi liên tiếp, thời gian, lỗi gần nhất; tap mở app detail. Nếu không có, ẩn section.
 4. **“Tất cả ứng dụng”**: card từng app, sắp xếp như desktop. Mỗi card: icon, tên, pill trạng thái xấu nhất; 2 dòng target `App`/`Supabase` với pill + latency; thời gian check gần nhất. Tap mở app detail.
 5. **Bottom nav**: Tổng quan, Ứng dụng, Phân tích, Cài đặt.
