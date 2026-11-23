@@ -23,11 +23,11 @@ describe('AppStatusRow', () => {
     renderRow();
 
     const row = screen.getByRole('row');
-    expect(row).toHaveClass('bg-red-50', 'border-l-4', 'border-l-red-500');
+    expect(row).toHaveClass('bg-bad-bg', 'border-l-4', 'border-l-bad-fg');
     expect(within(row).getByText('Lỗi')).toBeInTheDocument();
   });
 
-  it('shows paused pills instead of both target states and mutes the row', () => {
+  it('shows paused pills instead of both target states', () => {
     renderRow(
       makeAdminApp({
         paused: true,
@@ -36,10 +36,15 @@ describe('AppStatusRow', () => {
     );
 
     const row = screen.getByRole('row');
-    expect(row).toHaveClass('opacity-60');
     expect(within(row).getAllByText('Tạm dừng')).toHaveLength(2);
     expect(within(row).queryByText('Lỗi')).not.toBeInTheDocument();
     expect(within(row).queryByText('Ổn')).not.toBeInTheDocument();
+  });
+
+  it('does not dim the paused row with element opacity', () => {
+    renderRow(makeAdminApp({ paused: true, worstState: 'paused' }));
+
+    expect(screen.getByRole('row').className).not.toMatch(/opacity-/);
   });
 
   it('labels unmonitored targets as off', () => {
@@ -75,5 +80,15 @@ describe('AppStatusRow', () => {
       </table>,
     );
     expect(screen.getByText('—')).toBeInTheDocument();
+  });
+
+  it('offers an edit link through the row menu', () => {
+    renderRow();
+
+    const row = screen.getByRole('row');
+    expect(within(row).getByRole('link', { name: 'Sửa' })).toHaveAttribute(
+      'href',
+      '/admin/apps/app-alpha/edit',
+    );
   });
 });

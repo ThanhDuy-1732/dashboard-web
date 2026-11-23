@@ -21,11 +21,7 @@ export function AppStatusRow({ app }: { app: AdminAppView }) {
   return (
     <tr
       className={`border-b border-line ${
-        app.paused
-          ? 'opacity-60'
-          : failing
-            ? 'border-l-4 border-l-red-500 bg-red-50'
-            : ''
+        failing ? 'border-l-4 border-l-bad-fg bg-bad-bg' : ''
       }`}
     >
       <td className="px-4 py-3">
@@ -54,9 +50,9 @@ export function AppStatusRow({ app }: { app: AdminAppView }) {
             >
               {app.name}
             </Link>
-            <span className="block truncate text-xs text-ink/50">/{app.slug}</span>
+            <span className="block truncate text-xs text-muted">/{app.slug}</span>
             {!app.isVisible ? (
-              <span className="mt-1 inline-block rounded-full border border-line px-2 py-0.5 text-[11px] text-ink/55">
+              <span className="mt-1 inline-block rounded-full border border-line px-2 py-0.5 text-xs text-muted">
                 Đang ẩn
               </span>
             ) : null}
@@ -69,11 +65,11 @@ export function AppStatusRow({ app }: { app: AdminAppView }) {
       <td className="px-4 py-3">
         <StatusPill state={targetState(app, 'supabase')} size="sm" />
       </td>
-      <td className="px-4 py-3 text-sm tabular-nums text-ink/65">
+      <td className="px-4 py-3 text-sm tabular-nums text-muted">
         {formatLatency(latency)}
       </td>
       <td className="px-4 py-3 text-right">
-        <PauseMenu appId={app.id} paused={app.paused} />
+        <PauseMenu appId={app.id} paused={app.paused} showEdit />
       </td>
     </tr>
   );
