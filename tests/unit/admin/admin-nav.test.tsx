@@ -47,6 +47,23 @@ describe('admin navigation', () => {
     );
   });
 
+  it('matches non-exact links on whole segments, not path prefixes', () => {
+    usePathname.mockReturnValue('/admin/apps-old');
+    const { rerender } = render(<AdminMobileNav />);
+
+    expect(screen.getByRole('link', { name: /Ứng dụng/ })).not.toHaveAttribute(
+      'aria-current',
+    );
+
+    usePathname.mockReturnValue('/admin/apps/app-alpha');
+    rerender(<AdminMobileNav />);
+
+    expect(screen.getByRole('link', { name: /Ứng dụng/ })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+  });
+
   it('renders without an active link when the pathname is unavailable', () => {
     usePathname.mockReturnValue(null);
 

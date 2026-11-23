@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { StatusPill } from '@/components/admin/status-pill';
+import { StatusPill, statusPillLabels } from '@/components/admin/status-pill';
 import type { AdminAppView } from '@/lib/admin/overview';
 import { formatLatency, formatRelativeTime } from '@/lib/format';
 
@@ -28,6 +28,10 @@ function AppStatusCardContent({
   app: AdminAppView;
   now: Date;
 }) {
+  const worstState = app.paused ? 'paused' : app.worstState;
+  const appState = targetState(app.app, app.paused);
+  const supabaseState = targetState(app.supabase, app.paused);
+
   return (
     <>
       <div className="flex min-w-0 items-center gap-3">
@@ -56,8 +60,9 @@ function AppStatusCardContent({
         </span>
         <span data-testid="app-worst-state">
           <StatusPill
-            state={app.paused ? 'paused' : app.worstState}
+            state={worstState}
             size="sm"
+            ariaLabel={`${app.name}, ${statusPillLabels[worstState]}`}
           />
         </span>
       </div>
@@ -75,7 +80,11 @@ function AppStatusCardContent({
           <div className="flex min-w-0 items-center justify-between gap-2">
             <span className="text-xs text-muted">App</span>
             <span className="flex items-center gap-2">
-              <StatusPill state={targetState(app.app, app.paused)} size="sm" />
+              <StatusPill
+                state={appState}
+                size="sm"
+                ariaLabel={`${app.name}, App, ${statusPillLabels[appState]}`}
+              />
               <span className="text-xs tabular-nums text-muted">
                 {formatLatency(app.app?.latencyMs ?? null)}
               </span>
@@ -84,7 +93,11 @@ function AppStatusCardContent({
           <div className="flex min-w-0 items-center justify-between gap-2">
             <span className="text-xs text-muted">Supabase</span>
             <span className="flex items-center gap-2">
-              <StatusPill state={targetState(app.supabase, app.paused)} size="sm" />
+              <StatusPill
+                state={supabaseState}
+                size="sm"
+                ariaLabel={`${app.name}, Supabase, ${statusPillLabels[supabaseState]}`}
+              />
               <span className="text-xs tabular-nums text-muted">
                 {formatLatency(app.supabase?.latencyMs ?? null)}
               </span>

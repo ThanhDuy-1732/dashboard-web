@@ -162,6 +162,19 @@ describe('admin offline shell — rendered behavior', () => {
     expect(pill?.textContent).toBe('Chưa rõ');
   });
 
+  it('renders an inherited target key as plain text instead of the inherited value', async () => {
+    const model = baseModel();
+    // Simulate a corrupted/hostile snapshot value that is an inherited key.
+    (model.attention[0] as { target: string }).target = 'toString';
+    await render(model);
+
+    const attention = [...content().querySelectorAll('section')].find(
+      (section) => section.querySelector('h2')?.textContent === 'Cần chú ý',
+    );
+    expect(attention?.textContent).toContain('toString · 3 lần lỗi liên tiếp');
+    expect(attention?.textContent).not.toContain('function toString');
+  });
+
   it('renders app cards with an aria-hidden icon fallback, hidden badge and target rows', async () => {
     await render(baseModel());
 

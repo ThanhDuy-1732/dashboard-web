@@ -45,7 +45,7 @@ export function StatusSummaryStrip({
               />
               {cell.label}
             </dt>
-            <dd className="mt-1 font-display text-2xl font-semibold tabular-nums text-ink">
+            <dd className="mt-1 font-display text-3xl font-semibold tabular-nums text-ink">
               {counts.apps[cell.state]}
             </dd>
           </div>

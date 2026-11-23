@@ -27,6 +27,14 @@ describe('AppStatusRow', () => {
     expect(within(row).getByText('Lỗi')).toBeInTheDocument();
   });
 
+  it('labels each target pill with the app name, target and state', () => {
+    renderRow();
+
+    const row = screen.getByRole('row');
+    expect(within(row).getByLabelText('Alpha, App, Lỗi')).toBeInTheDocument();
+    expect(within(row).getByLabelText('Alpha, Supabase, Ổn')).toBeInTheDocument();
+  });
+
   it('shows paused pills instead of both target states', () => {
     renderRow(
       makeAdminApp({

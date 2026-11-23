@@ -2,7 +2,7 @@ import Link from 'next/link';
 import type { AdminAttentionItem } from '@/lib/admin/overview';
 import type { Target } from '@/lib/db/types';
 import { formatRelativeTime } from '@/lib/format';
-import { StatusPill } from './status-pill';
+import { StatusPill, statusPillLabels } from './status-pill';
 
 const targetLabels: Record<Target, string> = {
   app: 'Ứng dụng',
@@ -38,7 +38,11 @@ function AttentionItemContent({
         ) : null}
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1">
-        <StatusPill state={item.state} size="sm" />
+        <StatusPill
+          state={item.state}
+          size="sm"
+          ariaLabel={`${item.appName}, ${targetLabels[item.target]}, ${statusPillLabels[item.state]}`}
+        />
         <span className="text-xs text-muted">
           {formatRelativeTime(item.lastCheckAt, now)}
         </span>

@@ -55,6 +55,13 @@ describe('AttentionList', () => {
     expect(unknownPill?.querySelector('[aria-hidden="true"]')).not.toBeNull();
   });
 
+  it('gives each attention pill an accessible app, target and state label', () => {
+    render(<AttentionList items={items} now={now} />);
+
+    expect(screen.getByLabelText('Alpha, Ứng dụng, Lỗi')).toBeInTheDocument();
+    expect(screen.getByLabelText('Beta, Supabase, Chưa rõ')).toBeInTheDocument();
+  });
+
   it('uses the item state for the pill, not the failure count', () => {
     const unknownWithFailure: AdminAttentionItem = {
       appId: 'app-gamma',

@@ -174,6 +174,7 @@ describe('OverviewDesktop', () => {
       ]),
     );
     expect(container).toHaveTextContent('Alpha');
+    expect(screen.getAllByText('Đang mở 2 ngày')).toHaveLength(2);
   });
 
   it('shows the stale-data banner when the model is stale', () => {

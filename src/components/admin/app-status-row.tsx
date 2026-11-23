@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { PauseMenu } from '@/components/admin/pause-menu';
-import { StatusPill } from '@/components/admin/status-pill';
+import { StatusPill, statusPillLabels } from '@/components/admin/status-pill';
 import type { AdminAppView } from '@/lib/admin/overview';
 import { formatLatency } from '@/lib/format';
 
@@ -17,6 +17,8 @@ export function AppStatusRow({ app }: { app: AdminAppView }) {
   const latency = app.paused
     ? null
     : (app.app?.latencyMs ?? app.supabase?.latencyMs ?? null);
+  const appState = targetState(app, 'app');
+  const supabaseState = targetState(app, 'supabase');
 
   return (
     <tr
@@ -60,10 +62,18 @@ export function AppStatusRow({ app }: { app: AdminAppView }) {
         </div>
       </td>
       <td className="px-4 py-3">
-        <StatusPill state={targetState(app, 'app')} size="sm" />
+        <StatusPill
+          state={appState}
+          size="sm"
+          ariaLabel={`${app.name}, App, ${statusPillLabels[appState]}`}
+        />
       </td>
       <td className="px-4 py-3">
-        <StatusPill state={targetState(app, 'supabase')} size="sm" />
+        <StatusPill
+          state={supabaseState}
+          size="sm"
+          ariaLabel={`${app.name}, Supabase, ${statusPillLabels[supabaseState]}`}
+        />
       </td>
       <td className="px-4 py-3 text-sm tabular-nums text-muted">
         {formatLatency(latency)}

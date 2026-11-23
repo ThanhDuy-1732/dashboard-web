@@ -113,12 +113,12 @@ export function OverviewDesktop({
           </div>
 
           <div className="xl:hidden">
-            <IncidentRail incidents={incidents} />
+            <IncidentRail incidents={incidents} now={now} />
           </div>
         </div>
 
         <div className="hidden xl:block">
-          <IncidentRail incidents={incidents} />
+          <IncidentRail incidents={incidents} now={now} />
         </div>
       </div>
     </div>

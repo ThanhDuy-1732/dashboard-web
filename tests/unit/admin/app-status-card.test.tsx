@@ -18,6 +18,14 @@ describe('AppStatusCard', () => {
     expect(within(worst).getByText('Lỗi')).toBeInTheDocument();
   });
 
+  it('labels the worst-state and target pills with the app name, target and state', () => {
+    render(<AppStatusCard app={makeAdminApp()} now={now} />);
+
+    expect(screen.getByLabelText('Alpha, Lỗi')).toBeInTheDocument();
+    expect(screen.getByLabelText('Alpha, App, Lỗi')).toBeInTheDocument();
+    expect(screen.getByLabelText('Alpha, Supabase, Ổn')).toBeInTheDocument();
+  });
+
   it('shows the latest check time relative to now', () => {
     render(<AppStatusCard app={makeAdminApp()} now={now} />);
 

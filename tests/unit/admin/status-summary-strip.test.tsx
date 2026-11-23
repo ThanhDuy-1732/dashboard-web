@@ -30,6 +30,12 @@ describe('StatusSummaryStrip', () => {
     expect(screen.queryByText('Tạm dừng')).not.toBeInTheDocument();
   });
 
+  it('renders counts at the large 30px size from the spec', () => {
+    render(<StatusSummaryStrip counts={makeCounts()} appCount={6} />);
+
+    expect(screen.getByText('5').closest('dd')).toHaveClass('text-3xl');
+  });
+
   it('adds the paused chip only when apps are paused', () => {
     render(
       <StatusSummaryStrip

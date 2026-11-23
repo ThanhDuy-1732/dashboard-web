@@ -1,7 +1,7 @@
 export type StatusPillState = 'up' | 'down' | 'unknown' | 'off' | 'paused';
 export type StatusPillSize = 'sm' | 'md' | 'lg';
 
-const labels: Record<StatusPillState, string> = {
+export const statusPillLabels: Record<StatusPillState, string> = {
   up: 'Ổn',
   down: 'Lỗi',
   unknown: 'Chưa rõ',
@@ -27,20 +27,23 @@ export function StatusPill({
   state,
   label,
   size = 'md',
+  ariaLabel,
 }: {
   state: StatusPillState;
   label?: string;
   size?: StatusPillSize;
+  ariaLabel?: string;
 }) {
   const sizing = sizes[size];
 
   return (
     <span
+      aria-label={ariaLabel}
       data-state={state}
       className={`inline-flex items-center rounded-full font-medium ${styles[state]} ${sizing.pill}`}
     >
       <span aria-hidden="true" className={`rounded-full bg-current ${sizing.dot}`} />
-      {label ?? labels[state]}
+      {label ?? statusPillLabels[state]}
     </span>
   );
 }

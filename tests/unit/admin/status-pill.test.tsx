@@ -44,6 +44,16 @@ describe('StatusPill', () => {
       'down',
     );
   });
+
+  it('exposes an optional accessible label without changing visible text', () => {
+    render(<StatusPill state="down" ariaLabel="Alpha, App, Lỗi" />);
+
+    expect(screen.getByLabelText('Alpha, App, Lỗi')).toHaveAttribute(
+      'data-state',
+      'down',
+    );
+    expect(screen.getByText('Lỗi')).toBeInTheDocument();
+  });
 });
 
 describe('StatusBadge', () => {

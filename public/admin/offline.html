@@ -309,7 +309,10 @@
       var detail = item.consecutiveFailures > 0
         ? item.consecutiveFailures + ' lần lỗi liên tiếp'
         : 'Chưa có dữ liệu kiểm tra';
-      grow.appendChild(el('p', 'meta', (TARGET_LABELS[item.target] || item.target) + ' · ' + detail));
+      var targetLabel = Object.prototype.hasOwnProperty.call(TARGET_LABELS, item.target)
+        ? TARGET_LABELS[item.target]
+        : item.target;
+      grow.appendChild(el('p', 'meta', targetLabel + ' · ' + detail));
       if (item.lastError) {
         grow.appendChild(el('p', 'error', 'Lỗi gần nhất: ' + item.lastError));
       }

@@ -20,7 +20,9 @@ export function AdminNavLink({
   variant = 'mobile',
 }: AdminNavLinkProps) {
   const pathname = usePathname() ?? '';
-  const active = exact ? pathname === href : pathname.startsWith(href);
+  const active = exact
+    ? pathname === href
+    : pathname === href || pathname.startsWith(`${href}/`);
   const variantClasses =
     variant === 'sidebar'
       ? 'flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm focus-visible:outline-white'
