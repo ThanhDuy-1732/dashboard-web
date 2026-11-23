@@ -70,9 +70,29 @@ describe('OverviewDesktop', () => {
     );
 
     const alertLink = screen.getByRole('link', {
-      name: /Alpha.*Ứng dụng.*3 lần lỗi liên tiếp/,
+      name: /Alpha.*Ứng dụng.*3 lần lỗi liên tiếp.*5 phút trước.*Xem chi tiết/,
     });
     expect(alertLink).toHaveAttribute('href', '/admin/apps/app-alpha');
+    expect(alertLink).toHaveClass('border-bad-fg', 'bg-bad-bg', 'text-bad-fg');
+    expect(within(alertLink).getByText('Xem chi tiết')).not.toHaveClass('sr-only');
+  });
+
+  it('uses the warning tone for an unknown-only attention item', () => {
+    render(
+      <OverviewDesktop
+        model={makeModel({
+          attention: [{ ...attention, state: 'unknown', consecutiveFailures: 0 }],
+        })}
+        incidents={[]}
+        now={now}
+      />,
+    );
+
+    const alertLink = screen.getByRole('link', {
+      name: /Alpha.*Ứng dụng.*Chưa có dữ liệu kiểm tra.*5 phút trước.*Xem chi tiết/,
+    });
+    expect(alertLink).toHaveClass('border-warn-fg', 'bg-warn-bg', 'text-warn-fg');
+    expect(alertLink).not.toHaveClass('border-bad-fg');
   });
 
   it('renders app rows in model order and keeps the table wrapper overflow-visible', () => {
@@ -137,6 +157,8 @@ describe('OverviewDesktop', () => {
       />,
     );
 
-    expect(screen.getByText(/Dữ liệu giám sát đang cũ/)).toBeInTheDocument();
+    const banner = screen.getByText(/Dữ liệu giám sát đang cũ/).closest('div');
+    expect(banner).toHaveAttribute('role', 'status');
+    expect(banner).not.toHaveAttribute('role', 'alert');
   });
 });

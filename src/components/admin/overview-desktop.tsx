@@ -21,6 +21,10 @@ export function OverviewDesktop({
   now: Date;
 }) {
   const attention = model.attention[0];
+  const attentionTone =
+    attention?.state === 'unknown'
+      ? 'border-warn-fg bg-warn-bg text-warn-fg focus-visible:outline-warn-fg'
+      : 'border-bad-fg bg-bad-bg text-bad-fg focus-visible:outline-bad-fg';
 
   return (
     <div className="space-y-5">
@@ -28,7 +32,7 @@ export function OverviewDesktop({
 
       {model.isStale ? (
         <div
-          role="alert"
+          role="status"
           className="rounded-lg border border-warn-fg bg-warn-bg px-4 py-3"
         >
           <p className="font-semibold text-warn-fg">
@@ -45,7 +49,7 @@ export function OverviewDesktop({
       {attention ? (
         <Link
           href={`/admin/apps/${attention.appId}`}
-          className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-bad-fg bg-bad-bg px-4 py-3 text-sm text-bad-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bad-fg"
+          className={`flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border px-4 py-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 ${attentionTone}`}
         >
           <span className="font-semibold">{attention.appName}</span>
           <span aria-hidden="true">·</span>
@@ -56,7 +60,9 @@ export function OverviewDesktop({
               ? `${attention.consecutiveFailures} lần lỗi liên tiếp`
               : 'Chưa có dữ liệu kiểm tra'}
           </span>
-          <span className="sr-only">Xem chi tiết ứng dụng</span>
+          <span aria-hidden="true">·</span>
+          <span>{formatRelativeTime(attention.lastCheckAt, now)}</span>
+          <span className="ml-auto font-semibold">Xem chi tiết</span>
         </Link>
       ) : null}
 

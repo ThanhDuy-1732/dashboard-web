@@ -104,24 +104,32 @@ describe('OverviewMobile', () => {
     expect(screen.getByRole('heading', { name: 'Cần kiểm tra' })).toBeInTheDocument();
   });
 
-  it('shows the paused hero before other app status counts', () => {
+  it('shows the paused hero for a realistic all-paused model', () => {
     const model = makeModel({
       counts: withCounts(
-        { up: 0, down: 1, unknown: 0, off: 0, paused: 1 },
-        { up: 1, down: 0, unknown: 0, off: 1 },
-        1,
+        { up: 0, down: 0, unknown: 0, off: 0, paused: 1 },
+        { up: 0, down: 0, unknown: 0, off: 2 },
+        0,
       ),
+      apps: [makeAdminApp({ paused: true, worstState: 'paused' })],
+      attention: [],
+      lastCheckAt: null,
+      staleMinutes: null,
       allPaused: true,
     });
 
     render(<OverviewMobile model={model} now={now} />);
 
-    expect(
-      screen.getByRole('heading', { name: 'Đang tạm dừng giám sát' }),
-    ).toBeInTheDocument();
+    const hero = screen.getByRole('heading', { name: 'Đang tạm dừng giám sát', level: 2 });
+    expect(hero.closest('section')).toHaveClass(
+      'border-line',
+      'bg-unknown-bg',
+      'text-unknown-fg',
+    );
+    expect(hero.closest('section')).not.toHaveClass('bg-warn-bg');
   });
 
-  it('shows the monitoring-off hero when there are no monitored targets', () => {
+  it('uses the neutral tone when monitoring has no targets', () => {
     const model = makeModel({
       counts: withCounts(
         { up: 0, down: 0, unknown: 0, off: 1, paused: 0 },
@@ -133,9 +141,13 @@ describe('OverviewMobile', () => {
 
     render(<OverviewMobile model={model} now={now} />);
 
-    expect(
-      screen.getByRole('heading', { name: 'Chưa bật giám sát' }),
-    ).toBeInTheDocument();
+    const hero = screen.getByRole('heading', { name: 'Chưa bật giám sát', level: 2 });
+    expect(hero.closest('section')).toHaveClass(
+      'border-line',
+      'bg-unknown-bg',
+      'text-unknown-fg',
+    );
+    expect(hero.closest('section')).not.toHaveClass('bg-warn-bg');
   });
 
   it('shows the empty hero before the monitoring-off hero', () => {
@@ -156,6 +168,65 @@ describe('OverviewMobile', () => {
     ).toBeInTheDocument();
   });
 
+  it('uses an h2 hero so the page header remains the sole h1', () => {
+    render(<OverviewMobile model={makeModel()} now={now} />);
+
+    const hero = screen.getByRole('heading', { name: '1 ứng dụng đang lỗi', level: 2 });
+    expect(hero).toHaveAttribute('id', 'overview-mobile-status');
+    expect(hero.closest('section')).toHaveAttribute(
+      'aria-labelledby',
+      'overview-mobile-status',
+    );
+    expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
+  });
+
+  it('offers an app-creation link in the online empty hero', () => {
+    const model = makeModel({
+      counts: withCounts(
+        { up: 0, down: 0, unknown: 0, off: 0, paused: 0 },
+        { up: 0, down: 0, unknown: 0, off: 0 },
+        0,
+      ),
+      attention: [],
+      apps: [],
+    });
+
+    render(<OverviewMobile model={model} now={now} />);
+
+    expect(screen.getByRole('link', { name: 'Thêm ứng dụng' })).toHaveAttribute(
+      'href',
+      '/admin/apps/new',
+    );
+  });
+
+  it('does not offer an app-creation link in the offline empty hero', () => {
+    const model = makeModel({
+      counts: withCounts(
+        { up: 0, down: 0, unknown: 0, off: 0, paused: 0 },
+        { up: 0, down: 0, unknown: 0, off: 0 },
+        0,
+      ),
+      attention: [],
+      apps: [],
+    });
+
+    render(<OverviewMobile model={model} now={now} offline savedAt={savedAt} />);
+
+    expect(screen.queryByRole('link', { name: 'Thêm ứng dụng' })).not.toBeInTheDocument();
+  });
+
+  it('labels the mobile app-card section with a visible heading', () => {
+    render(<OverviewMobile model={makeModel()} now={now} />);
+
+    const heading = screen.getByRole('heading', { name: 'Tất cả ứng dụng', level: 2 });
+    expect(heading).toBeVisible();
+    expect(heading.closest('section')).toHaveAttribute(
+      'aria-labelledby',
+      'overview-mobile-apps',
+    );
+    expect(heading).toHaveAttribute('id', 'overview-mobile-apps');
+  });
+
   it('shows a stale-data banner when the model is stale', () => {
     render(
       <OverviewMobile
@@ -164,7 +235,9 @@ describe('OverviewMobile', () => {
       />,
     );
 
-    expect(screen.getByText(/Dữ liệu giám sát đang cũ/)).toBeInTheDocument();
+    const banner = screen.getByText(/Dữ liệu giám sát đang cũ/).closest('div');
+    expect(banner).toHaveAttribute('role', 'status');
+    expect(banner).not.toHaveAttribute('role', 'alert');
   });
 
   it('shows offline saved-at and last-check times', () => {

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { AdminOverviewModel } from '@/lib/admin/overview';
 import { formatDateTime, formatRelativeTime } from '@/lib/format';
 import { AppStatusCard } from './app-status-card';
@@ -19,17 +20,17 @@ function statusHero(model: AdminOverviewModel, now: Date): Hero {
     };
   }
 
-  if (counts.monitoredTargets === 0) {
-    return {
-      title: 'Chưa bật giám sát',
-      className: 'border-warn-fg bg-warn-bg text-warn-fg',
-    };
-  }
-
   if (model.allPaused) {
     return {
       title: 'Đang tạm dừng giám sát',
-      className: 'border-warn-fg bg-warn-bg text-warn-fg',
+      className: 'border-line bg-unknown-bg text-unknown-fg',
+    };
+  }
+
+  if (counts.monitoredTargets === 0) {
+    return {
+      title: 'Chưa bật giám sát',
+      className: 'border-line bg-unknown-bg text-unknown-fg',
     };
   }
 
@@ -82,7 +83,7 @@ export function OverviewMobile({
 
       {model.isStale ? (
         <div
-          role="alert"
+          role="status"
           className="rounded-lg border border-warn-fg bg-warn-bg px-4 py-3"
         >
           <p className="font-semibold text-warn-fg">
@@ -100,29 +101,45 @@ export function OverviewMobile({
         aria-labelledby="overview-mobile-status"
         className={`rounded-xl border p-5 ${hero.className}`}
       >
-        <h1
+        <h2
           id="overview-mobile-status"
           className="font-display text-2xl font-semibold tracking-tight"
         >
           {hero.title}
-        </h1>
+        </h2>
         {hero.detail ? (
           <p className="mt-2 text-sm text-muted">{hero.detail}</p>
+        ) : null}
+        {model.apps.length === 0 && !offline ? (
+          <Link
+            href="/admin/apps/new"
+            className="mt-4 inline-flex rounded-md bg-moss px-3 py-2 text-sm font-semibold text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
+          >
+            Thêm ứng dụng
+          </Link>
         ) : null}
       </section>
 
       <AttentionList items={model.attention} now={now} offline={offline} />
 
       {model.apps.length > 0 ? (
-        <section aria-label="Ứng dụng" className="space-y-3">
-          {model.apps.map((app) => (
-            <AppStatusCard
-              key={app.id}
-              app={app}
-              now={now}
-              offline={offline}
-            />
-          ))}
+        <section aria-labelledby="overview-mobile-apps">
+          <h2
+            id="overview-mobile-apps"
+            className="font-display text-lg font-semibold"
+          >
+            Tất cả ứng dụng
+          </h2>
+          <div className="mt-3 space-y-3">
+            {model.apps.map((app) => (
+              <AppStatusCard
+                key={app.id}
+                app={app}
+                now={now}
+                offline={offline}
+              />
+            ))}
+          </div>
         </section>
       ) : null}
     </div>
