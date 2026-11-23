@@ -15,6 +15,7 @@ const expected = {
   ],
   click_events: ['id', 'app_id', 'clicked_at', 'referrer', 'user_agent', 'ip_hash', 'country'],
   checks: ['id', 'app_id', 'target', 'checked_at', 'ok', 'status_code', 'latency_ms', 'error'],
+  health_runs: ['id', 'started_at', 'finished_at', 'ok', 'checked', 'failures', 'error'],
   app_status: [
     'app_id', 'target', 'state', 'consecutive_failures', 'consecutive_slow',
     'last_check_at', 'last_ok_at', 'last_down_at', 'last_down_alert_at', 'last_slow_alert_at',

@@ -22,6 +22,7 @@ export async function insertCheck(row: NewCheck): Promise<void> {
       ${row.app_id}, ${row.target}, ${row.checked_at}, ${row.ok},
       ${row.status_code}, ${row.latency_ms}, ${row.error}
     )
+    on conflict (app_id, target, checked_at) do nothing
   `;
 }
 

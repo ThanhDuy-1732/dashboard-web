@@ -127,7 +127,13 @@ Kiểm tra:
 - Neon: `select count(*) from checks;` tăng.
 - Nếu response 401: sai header/secret.
 - Nếu 202: một run khác đang giữ lock, bình thường.
-- Nếu 500: xem log Vercel (DB hoặc persistence lỗi).
+- Nếu 500: xem log Vercel (DB hoặc persistence lỗi). Lỗi kết nối DB tạm thời được retry tự động 3 lần trước khi run bị đánh fail. Log Vercel trên Hobby chỉ giữ ~1 giờ, nên xem thêm bảng `health_runs`:
+  ```sql
+  select started_at, ok, checked, failures, error
+  from health_runs
+  order by started_at desc
+  limit 5;
+  ```
 
 ## 9. Thêm và quản lý app
 

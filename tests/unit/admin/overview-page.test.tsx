@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   getStatuses: vi.fn(),
   listChecksSince: vi.fn(),
   listRecentIncidents: vi.fn(),
+  listRecentHealthRuns: vi.fn(),
   listClicksSince: vi.fn(),
   pauseMonitoringAction: vi.fn(),
   resumeMonitoringAction: vi.fn(),
@@ -19,6 +20,9 @@ vi.mock('@/lib/db/checks', () => ({
   getStatuses: mocks.getStatuses,
   listChecksSince: mocks.listChecksSince,
   listRecentIncidents: mocks.listRecentIncidents,
+}));
+vi.mock('@/lib/db/health-runs', () => ({
+  listRecentHealthRuns: mocks.listRecentHealthRuns,
 }));
 vi.mock('@/lib/db/clicks', () => ({ listClicksSince: mocks.listClicksSince }));
 vi.mock('@/app/admin/(protected)/apps/actions', () => ({
@@ -70,6 +74,7 @@ beforeEach(() => {
   mocks.getStatuses.mockResolvedValue([status]);
   mocks.listChecksSince.mockResolvedValue([]);
   mocks.listRecentIncidents.mockResolvedValue([]);
+  mocks.listRecentHealthRuns.mockResolvedValue([]);
   mocks.listClicksSince.mockResolvedValue([]);
 });
 
@@ -90,6 +95,29 @@ describe('/admin overview page', () => {
       new Date('2026-11-22T12:00:00.000Z'),
     );
     expect(mocks.listRecentIncidents).toHaveBeenCalledWith(10);
+    expect(mocks.listRecentHealthRuns).toHaveBeenCalledWith(1);
     expect(mocks.listClicksSince).not.toHaveBeenCalled();
+  });
+
+  it('shows a banner when the latest health run failed', async () => {
+    mocks.listRecentHealthRuns.mockResolvedValue([
+      {
+        id: 1,
+        started_at: new Date('2026-11-23T11:50:00.000Z'),
+        finished_at: new Date('2026-11-23T11:51:00.000Z'),
+        ok: false,
+        checked: 13,
+        failures: 2,
+        error: 'db timeout',
+      },
+    ]);
+
+    render(await AdminOverviewPage());
+
+    expect(
+      screen.getByText('Lần chạy giám sát gần nhất thất bại.'),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/db timeout/)).toBeInTheDocument();
+    expect(screen.getByText(/13 mục tiêu đã kiểm tra, 2 lỗi ghi/)).toBeInTheDocument();
   });
 });

@@ -69,6 +69,18 @@ export type CheckRow = {
 
 export type NewCheck = Omit<CheckRow, 'id'>;
 
+export type HealthRunRow = {
+  id: number;
+  started_at: Date;
+  finished_at: Date;
+  ok: boolean;
+  checked: number;
+  failures: number;
+  error: string | null;
+};
+
+export type NewHealthRun = Omit<HealthRunRow, 'id'>;
+
 export type AppStatusRow = {
   app_id: string;
   target: Target;
