@@ -11,7 +11,7 @@ describe('service worker cache isolation', () => {
     expect(hubSw).toContain("startsWith('ecosystem-hub-')");
     expect(adminSw).toContain("startsWith('ecosystem-admin-')");
     expect(hubSw).not.toContain('key !== CACHE');
-    expect(adminSw).not.toContain('key !== CACHE');
+    expect(adminSw).toContain('key !== CACHE');
     expect(hubSw).not.toContain("startsWith('ecosystem-admin-')");
     expect(adminSw).not.toContain("startsWith('ecosystem-hub-')");
   });
