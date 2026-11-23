@@ -114,11 +114,11 @@ export function AdminInstallPrompt() {
   return (
     <div
       role="region"
-      aria-label="Cài ứng dụng Ecosystem Hub"
+      aria-label="Cài ứng dụng Ecosystem Admin"
       className="fixed inset-x-4 bottom-20 z-40 flex items-start gap-3 rounded-xl border border-line bg-card p-4 shadow-lg lg:hidden"
     >
       <div className="min-w-0 flex-1">
-        <p className="font-semibold text-ink">Cài ứng dụng Ecosystem Hub</p>
+        <p className="font-semibold text-ink">Cài ứng dụng Ecosystem Admin</p>
         {mode === 'ios' ? (
           <p className="mt-1 text-xs leading-5 text-muted">
             Chạm nút Chia sẻ trong Safari, rồi chọn &ldquo;Thêm vào màn hình
@@ -133,7 +133,7 @@ export function AdminInstallPrompt() {
           <button
             type="button"
             onClick={handleInstall}
-            className="mt-3 rounded-md bg-moss px-3 py-1.5 text-xs font-semibold text-paper transition-colors hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
+            className="mt-3 min-h-11 rounded-md bg-moss px-3 py-1.5 text-xs font-semibold text-paper transition-colors hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
           >
             Cài ứng dụng
           </button>
@@ -143,7 +143,7 @@ export function AdminInstallPrompt() {
         type="button"
         onClick={handleDismiss}
         aria-label="Ẩn lời nhắc cài đặt"
-        className="-mr-1 -mt-1 rounded-md px-2 py-1 text-lg leading-none text-muted hover:bg-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
+        className="-mr-1 -mt-1 min-h-11 min-w-11 rounded-md px-2 py-1 text-lg leading-none text-muted hover:bg-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
       >
         &times;
       </button>

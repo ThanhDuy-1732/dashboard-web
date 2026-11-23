@@ -19,6 +19,7 @@ describe('ConnectivityBanner', () => {
     expect(banner).toHaveTextContent('Bạn đang offline');
     expect(banner).toHaveTextContent('Kiểm tra kết nối và thử lại');
     expect(banner).toHaveClass('bg-warn-bg', 'text-warn-fg');
+    expect(banner).not.toHaveAttribute('aria-live');
 
     act(() => {
       window.dispatchEvent(new Event('online'));

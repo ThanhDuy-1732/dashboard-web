@@ -31,7 +31,6 @@ export function ConnectivityBanner() {
   return (
     <div
       role="status"
-      aria-live="polite"
       className="mb-4 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border border-warn-fg bg-warn-bg px-4 py-3 text-sm text-warn-fg"
     >
       <span className="font-semibold">Bạn đang offline</span>

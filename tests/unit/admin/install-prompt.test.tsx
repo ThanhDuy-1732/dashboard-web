@@ -99,7 +99,11 @@ describe('AdminInstallPrompt', () => {
     });
 
     const button = screen.getByRole('button', { name: 'Cài ứng dụng' });
-    expect(button).toHaveClass('px-3', 'py-1.5', 'text-xs');
+    expect(button).toHaveClass('px-3', 'py-1.5', 'text-xs', 'min-h-11');
+    expect(screen.getByText('Cài ứng dụng Ecosystem Admin')).toBeInTheDocument();
+    expect(
+      screen.getByRole('region', { name: 'Cài ứng dụng Ecosystem Admin' }),
+    ).toBeInTheDocument();
 
     fireEvent.click(button);
 
@@ -133,9 +137,11 @@ describe('AdminInstallPrompt', () => {
     useIosUserAgent();
 
     const first = render(<AdminInstallPrompt />);
-    fireEvent.click(
-      await screen.findByRole('button', { name: 'Ẩn lời nhắc cài đặt' }),
-    );
+    const dismissButton = await screen.findByRole('button', {
+      name: 'Ẩn lời nhắc cài đặt',
+    });
+    expect(dismissButton).toHaveClass('min-h-11', 'min-w-11');
+    fireEvent.click(dismissButton);
 
     const stored = localStorage.getItem(ADMIN_INSTALL_DISMISS_KEY);
     expect(stored).not.toBeNull();
