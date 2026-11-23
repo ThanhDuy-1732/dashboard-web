@@ -150,6 +150,7 @@
     cursor: pointer;
   }
   .lock:hover { background: var(--paper); color: var(--ink); }
+  .lock:focus-visible { outline: 2px solid var(--moss); outline-offset: 2px; }
   .empty {
     border: 1px solid var(--line);
     background: var(--card);
@@ -237,7 +238,7 @@
   }
 
   function pill(state) {
-    var known = STATE_LABELS[state] ? state : 'unknown';
+    var known = Object.prototype.hasOwnProperty.call(STATE_LABELS, state) ? state : 'unknown';
     return el('span', 'pill pill-' + known, STATE_LABELS[known]);
   }
 
@@ -340,7 +341,9 @@
       img.src = app.iconUrl;
       head.appendChild(img);
     } else {
-      head.appendChild(el('span', 'icon-fallback', String(app.name || '?').slice(0, 1).toUpperCase()));
+      var fallback = el('span', 'icon-fallback', String(app.name || '?').slice(0, 1).toUpperCase());
+      fallback.setAttribute('aria-hidden', 'true');
+      head.appendChild(fallback);
     }
     var names = el('div', 'grow');
     names.appendChild(el('span', 'name', app.name));

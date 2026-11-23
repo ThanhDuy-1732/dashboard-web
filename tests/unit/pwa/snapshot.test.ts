@@ -81,6 +81,62 @@ describe('admin snapshot storage', () => {
     expect(snapshot?.model).toEqual(model);
   });
 
+  it('commits the write before resolving (load sees the snapshot right after save)', async () => {
+    await saveAdminSnapshot(model);
+    // A brand-new read must observe the committed value immediately: resolving
+    // on request.onsuccess instead of tx.oncomplete could return before commit.
+    expect(await loadAdminSnapshot()).not.toBeNull();
+    expect((await loadAdminSnapshot())?.model).toEqual(model);
+  });
+
+  it('surfaces a commit-time abort instead of resolving on request success', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const commitError = new Error('commit failed');
+
+    vi.stubGlobal('indexedDB', {
+      open: () => {
+        const openRequest: Record<string, unknown> = {
+          result: {
+            objectStoreNames: { contains: () => true },
+            createObjectStore: () => {},
+            close: () => {},
+            transaction: () => {
+              const storeRequest: Record<string, unknown> = {};
+              const tx: Record<string, unknown> = {
+                error: commitError,
+                objectStore: () => ({
+                  put: () => storeRequest,
+                  delete: () => storeRequest,
+                  get: () => storeRequest,
+                }),
+              };
+              queueMicrotask(() => {
+                // The request succeeds, but the transaction aborts at commit.
+                if (typeof storeRequest.onsuccess === 'function') {
+                  (storeRequest.onsuccess as () => void)();
+                }
+                if (typeof tx.onabort === 'function') {
+                  (tx.onabort as () => void)();
+                }
+              });
+              return tx;
+            },
+          },
+        };
+        queueMicrotask(() => {
+          if (typeof openRequest.onsuccess === 'function') {
+            (openRequest.onsuccess as () => void)();
+          }
+        });
+        return openRequest;
+      },
+    });
+
+    await saveAdminSnapshot(model);
+    expect(errorSpy).toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+
   it('returns null when no snapshot exists', async () => {
     expect(await loadAdminSnapshot()).toBeNull();
   });

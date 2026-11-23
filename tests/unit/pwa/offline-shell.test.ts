@@ -58,4 +58,11 @@ describe('admin offline shell', () => {
     const html = readFileSync(shellPath, 'utf8');
     expect(html).toMatch(/\.delete\(/);
   });
+
+  it('gives the Khoá button a visible keyboard focus style', () => {
+    const html = readFileSync(shellPath, 'utf8');
+    expect(html).toContain('.lock:focus-visible');
+    expect(html).toContain('outline: 2px solid');
+    expect(html).toContain('outline-offset: 2px');
+  });
 });

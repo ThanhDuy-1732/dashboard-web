@@ -39,12 +39,23 @@ async function withStore<T>(
   try {
     return await new Promise<T>((resolve, reject) => {
       const tx = db.transaction(ADMIN_SNAPSHOT_STORE, mode);
+      let result!: T;
       const request = run(tx.objectStore(ADMIN_SNAPSHOT_STORE));
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error ?? new Error('indexedDB request failed'));
-      tx.onabort = () => reject(tx.error ?? new Error('indexedDB transaction aborted'));
+      // A request succeeding only means the operation was queued; the write is
+      // not durable until the transaction commits. Capture the value here and
+      // settle the promise on tx.oncomplete, never on request.onsuccess.
+      request.onsuccess = () => {
+        result = request.result;
+      };
+      tx.oncomplete = () => resolve(result);
+      tx.onerror = () =>
+        reject(tx.error ?? request.error ?? new Error('indexedDB request failed'));
+      tx.onabort = () =>
+        reject(tx.error ?? request.error ?? new Error('indexedDB transaction aborted'));
     });
   } finally {
+    // close() only drops new-transaction access; the in-flight transaction is
+    // allowed to finish, and by now it has committed (or rejected).
     db.close();
   }
 }
