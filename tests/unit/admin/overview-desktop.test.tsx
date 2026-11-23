@@ -123,6 +123,34 @@ describe('OverviewDesktop', () => {
     expect(container.querySelector('thead .sr-only')).toHaveTextContent('Thao tác');
   });
 
+  it('shows an app-creation empty state when there are no apps', () => {
+    render(
+      <OverviewDesktop
+        model={makeModel({
+          counts: {
+            apps: { up: 0, down: 0, unknown: 0, off: 0, paused: 0 },
+            targets: { up: 0, down: 0, unknown: 0, off: 0 },
+            monitoredTargets: 0,
+          },
+          attention: [],
+          apps: [],
+          lastCheckAt: null,
+          staleMinutes: null,
+          isStale: false,
+          allPaused: false,
+        })}
+        incidents={[]}
+        now={now}
+      />,
+    );
+
+    expect(screen.getByText('Chưa có ứng dụng nào')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Thêm ứng dụng' })).toHaveAttribute(
+      'href',
+      '/admin/apps/new',
+    );
+  });
+
   it('renders incidents beside the table at xl and below it at narrower widths', () => {
     const { container } = render(
       <OverviewDesktop

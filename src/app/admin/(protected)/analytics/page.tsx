@@ -47,7 +47,7 @@ export default async function AdminAnalyticsPage() {
           Phân tích
         </h1>
         <p className="mt-1 text-sm text-muted">
-          Lượt truy cập và khách riêng trong 30 ngày gần nhất.
+          Lượt bấm và khách riêng trong 30 ngày gần nhất.
         </p>
       </header>
 

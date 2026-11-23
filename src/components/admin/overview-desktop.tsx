@@ -93,9 +93,21 @@ export function OverviewDesktop({
                 </tr>
               </thead>
               <tbody>
-                {model.apps.map((app) => (
-                  <AppStatusRow key={app.id} app={app} />
-                ))}
+                {model.apps.length > 0 ? (
+                  model.apps.map((app) => <AppStatusRow key={app.id} app={app} />)
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-10 text-center">
+                      <p className="font-medium text-ink">Chưa có ứng dụng nào</p>
+                      <Link
+                        href="/admin/apps/new"
+                        className="mt-3 inline-flex rounded-md bg-moss px-3 py-2 text-sm font-semibold text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
+                      >
+                        Thêm ứng dụng
+                      </Link>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

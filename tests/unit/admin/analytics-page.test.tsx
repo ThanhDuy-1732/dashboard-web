@@ -100,18 +100,26 @@ describe('/admin/analytics page', () => {
     render(await AdminAnalyticsPage());
 
     expect(screen.getByRole('heading', { name: 'Phân tích', level: 1 })).toBeInTheDocument();
+    expect(
+      screen.getByText('Lượt bấm và khách riêng trong 30 ngày gần nhất.'),
+    ).toBeInTheDocument();
     expect(screen.getByTestId('click-chart')).toBeInTheDocument();
 
     const metrics = screen.getByRole('group', { name: 'Chỉ số lượt bấm' });
-    expect(within(metrics).getByText('Lượt bấm hôm nay').parentElement).toHaveTextContent('1');
-    expect(within(metrics).getByText('7 ngày').parentElement).toHaveTextContent('2');
-    expect(within(metrics).getByText('30 ngày').parentElement).toHaveTextContent('3');
-    expect(within(metrics).getByText('Khách riêng 30 ngày').parentElement).toHaveTextContent('2');
+    const metricValue = (label: string) =>
+      within(metrics).getByText(label).parentElement?.querySelector('dd')?.textContent;
+    expect(metricValue('Lượt bấm hôm nay')).toBe('1');
+    expect(metricValue('7 ngày')).toBe('2');
+    expect(metricValue('30 ngày')).toBe('3');
+    expect(metricValue('Khách riêng 30 ngày')).toBe('2');
 
     const table = screen.getByRole('table', { name: 'Lượt bấm theo ứng dụng' });
-    expect(within(table).getByText('Cedar Console').closest('tr')).toHaveTextContent('2');
-    expect(within(table).getByText('Birch Portal').closest('tr')).toHaveTextContent('1');
-    expect(within(table).getByText('Elm Dashboard').closest('tr')).toHaveTextContent('0');
+    const cedarRow = within(table).getByRole('row', { name: /Cedar Console/ });
+    const birchRow = within(table).getByRole('row', { name: /Birch Portal/ });
+    const elmRow = within(table).getByRole('row', { name: /Elm Dashboard/ });
+    expect(within(cedarRow).getByRole('cell')).toHaveTextContent(/^2$/);
+    expect(within(birchRow).getByRole('cell')).toHaveTextContent(/^1$/);
+    expect(within(elmRow).getByRole('cell')).toHaveTextContent(/^0$/);
 
     expect(mocks.connection).toHaveBeenCalledOnce();
     expect(mocks.listAllApps).toHaveBeenCalledOnce();
