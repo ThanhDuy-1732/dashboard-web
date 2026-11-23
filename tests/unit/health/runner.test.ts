@@ -198,9 +198,9 @@ describe('runHealthChecks', () => {
     expect(insertCheck).toHaveBeenCalledTimes(2);
   });
 
-  it('fails the run with counts when persistence keeps failing', async () => {
+  it('fails the run with target details when persistence fails', async () => {
     const insertCheck = vi.fn(async () => {
-      throw connectionError();
+      throw Object.assign(new Error('duplicate key'), { code: '23505' });
     });
     const deps = makeDeps({
       listAppsToCheck: async () => [app({ monitor_supabase: false })],
@@ -211,7 +211,10 @@ describe('runHealthChecks', () => {
 
     expect(error).toBeInstanceOf(HealthRunError);
     expect(error).toMatchObject({ checked: 1, failures: 1 });
-    expect(insertCheck).toHaveBeenCalledTimes(3);
+    expect((error as HealthRunError).details).toEqual([
+      { slug: 'blog', target: 'app', code: '23505', message: 'duplicate key' },
+    ]);
+    expect(insertCheck).toHaveBeenCalledTimes(1);
   });
 });
 

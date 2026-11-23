@@ -37,11 +37,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json(result);
   } catch (error) {
-    errorMessage = error instanceof Error ? error.message : 'health run failed';
-
     if (error instanceof HealthRunError) {
       checked = error.checked;
       failures = error.failures;
+      errorMessage = error.describe();
+    } else {
+      errorMessage = error instanceof Error ? error.message : 'health run failed';
     }
 
     console.error('health run failed', error);

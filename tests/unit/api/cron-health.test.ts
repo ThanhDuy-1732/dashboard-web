@@ -114,8 +114,17 @@ describe('POST /api/cron/health', () => {
     );
   });
 
-  it('records persistence failure counts', async () => {
-    vi.mocked(runHealthChecks).mockRejectedValue(new HealthRunError(3, 2));
+  it('records persistence failure details', async () => {
+    vi.mocked(runHealthChecks).mockRejectedValue(
+      new HealthRunError(3, [
+        {
+          slug: 'qr-app',
+          target: 'app',
+          code: 'CONNECTION_CLOSED',
+          message: 'write CONNECTION_CLOSED ep-pooler:5432',
+        },
+      ]),
+    );
 
     const response = await POST(request(secret));
 
@@ -124,9 +133,12 @@ describe('POST /api/cron/health', () => {
       expect.objectContaining({
         ok: false,
         checked: 3,
-        failures: 2,
-        error: '2 health target(s) failed to persist',
+        failures: 1,
+        error: expect.stringContaining('CONNECTION_CLOSED'),
       }),
+    );
+    expect(insertHealthRun).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.stringContaining('qr-app:app') }),
     );
   });
 

@@ -40,7 +40,7 @@ export async function withDbRetry<T>(
   operation: () => Promise<T>,
   options: DbRetryOptions = {},
 ): Promise<T> {
-  const attempts = Math.max(1, options.attempts ?? 3);
+  const attempts = Math.max(1, options.attempts ?? 6);
   const sleep = options.sleep ?? defaultSleep;
 
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
@@ -48,7 +48,7 @@ export async function withDbRetry<T>(
       return await operation();
     } catch (error) {
       if (attempt >= attempts || !isRetryableDbError(error)) throw error;
-      await sleep(attempt * 150);
+      await sleep(Math.min(3000, 250 * 2 ** (attempt - 1)));
     }
   }
 

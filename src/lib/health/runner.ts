@@ -8,7 +8,7 @@ import type {
 } from '@/lib/db/types';
 import { withDbRetry } from '@/lib/db/retry';
 import { evaluateCheck } from '@/lib/health/evaluate';
-import { HealthRunError } from '@/lib/health/errors';
+import { HealthRunError, type HealthRunFailure } from '@/lib/health/errors';
 import { targetsForApp } from '@/lib/health/targets';
 import type { CheckResult, HealthAlert, HealthTarget } from '@/lib/health/types';
 
@@ -49,6 +49,7 @@ export async function runHealthChecks(
 
   let checked = 0;
   let failures = 0;
+  const failureDetails: HealthRunFailure[] = [];
 
   await Promise.all(
     targets.map(async (target) => {
@@ -126,14 +127,35 @@ export async function runHealthChecks(
         }
       } catch (error) {
         failures += 1;
+        failureDetails.push(toFailureDetail(target, error));
         console.error(`health persistence failed for ${target.slug}:${target.target}`, error);
       }
     }),
   );
 
   if (failures > 0) {
-    throw new HealthRunError(checked, failures);
+    throw new HealthRunError(checked, failureDetails);
   }
 
   return { checked, skipped: false };
+}
+
+function toFailureDetail(target: HealthTarget, error: unknown): HealthRunFailure {
+  if (error instanceof Error) {
+    const { code } = error as { code?: unknown };
+
+    return {
+      slug: target.slug,
+      target: target.target,
+      code: typeof code === 'string' ? code : null,
+      message: error.message,
+    };
+  }
+
+  return {
+    slug: target.slug,
+    target: target.target,
+    code: null,
+    message: String(error),
+  };
 }
