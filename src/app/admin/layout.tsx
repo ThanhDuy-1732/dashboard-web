@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
+import { AdminServiceWorkerRegister } from '@/components/admin/admin-sw-register';
 
 export const metadata: Metadata = {
   title: 'Ecosystem Admin',
@@ -21,5 +22,10 @@ export const viewport: Viewport = {
 };
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <AdminServiceWorkerRegister />
+      {children}
+    </>
+  );
 }

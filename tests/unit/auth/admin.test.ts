@@ -43,6 +43,11 @@ describe('adminGate', () => {
     expect(adminGate({ pathname: '/admin/offline.html', hasValidSession: false })).toBe('allow');
   });
 
+  it('always allows the admin PWA static assets', () => {
+    expect(adminGate({ pathname: '/admin/sw.js', hasValidSession: false })).toBe('allow');
+    expect(adminGate({ pathname: '/admin/manifest.webmanifest', hasValidSession: false })).toBe('allow');
+  });
+
   it('still protects other admin paths without a session', () => {
     expect(adminGate({ pathname: '/admin/apps', hasValidSession: false })).toBe('login');
     expect(adminGate({ pathname: '/admin/offline/extra', hasValidSession: false })).toBe('login');

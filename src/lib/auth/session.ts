@@ -43,7 +43,12 @@ export function adminGate(input: {
   if (input.pathname === '/admin/login' || input.pathname.startsWith('/admin/login/')) {
     return 'allow';
   }
-  if (input.pathname === '/admin/offline' || input.pathname === '/admin/offline.html') {
+  if (
+    input.pathname === '/admin/offline' ||
+    input.pathname === '/admin/offline.html' ||
+    input.pathname === '/admin/sw.js' ||
+    input.pathname === '/admin/manifest.webmanifest'
+  ) {
     return 'allow';
   }
   return input.hasValidSession ? 'allow' : 'login';
