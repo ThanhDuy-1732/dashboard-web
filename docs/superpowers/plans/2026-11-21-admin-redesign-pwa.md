@@ -282,15 +282,15 @@ git commit -m "feat: add admin status summary and attention list"
 - Test: `tests/unit/admin/app-status-row.test.tsx`, `app-status-card.test.tsx`, `incident-rail.test.tsx`, `pause-menu.test.tsx`
 
 **Interfaces:**
-- `AppStatusRow({ app })`, `AppStatusCard({ app, offline? })`.
+- `AppStatusRow({ app })`, `AppStatusCard({ app, now, offline? })` — card hiện worst-state pill, thời gian check gần nhất, badge `Đang ẩn`.
 - `IncidentRail({ incidents })`.
-- `PauseMenu({ appId, paused })` — gọi `pauseMonitoringAction(appId, 30|60)`, `resumeMonitoringAction(appId)`.
+- `PauseMenu({ appId, paused, showEdit? })` — gọi `pauseMonitoringAction(appId, 30|60)`, `resumeMonitoringAction(appId)`; `showEdit` thêm link `Sửa` cho menu trong bảng.
 - `RecentIncidentRow = IncidentRow & { app_name: string; app_slug: string; app_paused: boolean }`; `listRecentIncidents(limit: number): Promise<RecentIncidentRow[]>`.
 
 - [ ] **Step 1: Write failing tests**
 
 Row: app down có row class đỏ, pill `Lỗi`; app paused hiện `Tạm dừng` thay cho 2 target; target `null` hiện `Tắt`.
-Card: down hiện `Lỗi`, paused hiện `Tạm dừng`, link tới `/admin/apps/[id]`.
+Card: down hiện worst-state pill `Lỗi` + target pills; paused hiện `Tạm dừng`; ẩn hiện `Đang ẩn`; có thời gian check gần nhất; link tới `/admin/apps/[id]`.
 Rail: incident paused hiện `Tạm dừng theo dõi`; rỗng hiện `Không có sự cố`.
 PauseMenu: mock `@/app/admin/(protected)/apps/actions`; click “Tạm dừng 30 phút” → action được gọi với `(appId, 30)`; paused → click “Tiếp tục giám sát” → resume.
 
@@ -347,7 +347,7 @@ Expected: FAIL.
 - [ ] **Step 3: Implement**
 
 Desktop: `StatusSummaryStrip`, stale banner, alert line từ `model.attention[0]`, `<table>` rows, rail `hidden xl:block` + list dưới bảng `xl:hidden`.
-Mobile: stale/offline banner, hero, `AttentionList`, `AppStatusCard`s; truyền `offline` để card/attention render `<div>` thay vì `<Link>`, không có action. Không render bottom nav ở đây (shell lo).
+Mobile: stale/offline banner, hero, `AttentionList`, `AppStatusCard`s truyền `now` + `offline` để card/attention render `<div>` thay vì `<Link>`, không có action. Không render bottom nav ở đây (shell lo).
 
 - [ ] **Step 4: Run tests**
 
