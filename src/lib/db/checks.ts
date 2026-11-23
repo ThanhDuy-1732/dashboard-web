@@ -8,6 +8,12 @@ import type {
   Target,
 } from '@/lib/db/types';
 
+export type RecentIncidentRow = IncidentRow & {
+  app_name: string;
+  app_slug: string;
+  app_paused: boolean;
+};
+
 export async function insertCheck(row: NewCheck): Promise<void> {
   const sql = getSql();
   await sql`
@@ -106,6 +112,19 @@ export async function listIncidents(appId: string, limit: number): Promise<Incid
     select * from incidents
     where app_id = ${appId}
     order by started_at desc
+    limit ${limit}
+  `;
+}
+
+export async function listRecentIncidents(
+  limit: number,
+): Promise<RecentIncidentRow[]> {
+  const sql = getSql();
+  return sql<RecentIncidentRow[]>`
+    select i.*, a.name as app_name, a.slug as app_slug,
+      (a.monitoring_paused_until is not null and a.monitoring_paused_until > now()) as app_paused
+    from incidents i join apps a on a.id = i.app_id
+    order by i.started_at desc
     limit ${limit}
   `;
 }
