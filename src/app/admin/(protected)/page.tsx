@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { connection } from 'next/server';
+import { AdminBadge } from '@/components/admin/admin-badge';
 import { AdminPageHeader } from '@/components/admin/admin-page-header';
 import { OverviewDesktop } from '@/components/admin/overview-desktop';
 import { OverviewMobile } from '@/components/admin/overview-mobile';
@@ -26,6 +27,7 @@ export default async function AdminOverviewPage() {
   return (
     <div className="space-y-5">
       <AdminSnapshotWriter model={model} />
+      <AdminBadge downTargetCount={model.counts.targets.down} />
       <AdminPageHeader
         title="Tổng quan"
         description="Tình trạng sức khỏe ứng dụng và các sự cố gần đây."
