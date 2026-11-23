@@ -385,7 +385,7 @@ Expected: FAIL.
 
 - [ ] **Step 3: Implement pages**
 
-Overview bỏ toàn bộ KPI/chart cũ; analytics page chuyển phần đó sang, dùng `AdminPageHeader` và token mới. Giữ `export const instant = false;` cho các trang đọc DB.
+Overview bỏ toàn bộ KPI/chart cũ; analytics page chuyển phần đó sang, dùng header đơn giản (`<h1>` + mô tả) vì không có dữ liệu trạng thái, và token mới. Giữ `export const instant = false;` cho các trang đọc DB.
 
 - [ ] **Step 4: Run tests + build**
 
