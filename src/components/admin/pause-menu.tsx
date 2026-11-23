@@ -16,7 +16,7 @@ export function PauseMenu({
     <details className="relative inline-block text-left">
       <summary
         aria-label="Tùy chọn giám sát"
-        className="cursor-pointer list-none rounded-md border border-line px-2 py-1 text-sm leading-none text-muted hover:border-moss hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
+        className="inline-flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center rounded-md border border-line text-sm leading-none text-muted hover:border-moss hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
       >
         <span aria-hidden="true">⋯</span>
       </summary>

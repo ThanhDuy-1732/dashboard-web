@@ -26,6 +26,13 @@ describe('PauseMenu', () => {
     expect(trigger).toHaveTextContent('⋯');
   });
 
+  it('gives the trigger a 44px minimum tap target', () => {
+    render(<PauseMenu appId="app-alpha" paused={false} />);
+
+    const trigger = screen.getByLabelText('Tùy chọn giám sát');
+    expect(trigger).toHaveClass('min-h-11', 'min-w-11');
+  });
+
   it('calls the pause action with 30 minutes', () => {
     render(<PauseMenu appId="app-alpha" paused={false} />);
     openMenu();
