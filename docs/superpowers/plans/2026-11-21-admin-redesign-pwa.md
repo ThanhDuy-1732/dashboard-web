@@ -336,7 +336,7 @@ git commit -m "feat: add admin app status rows, cards and incidents"
 
 - [ ] **Step 1: Write failing tests**
 
-Desktop: model có 1 down → alert line hiện app/target; table render đủ app theo thứ tự `model.apps`; rail render incident; `isStale` → banner dữ liệu cũ.
+Desktop: model có 1 down → alert line hiện app/target; table render đủ app theo thứ tự `model.apps`; rail render incident; `isStale` → banner dữ liệu cũ; model không có app → empty state + CTA “Thêm ứng dụng”.
 Mobile hero precedence: `apps.length === 0` → “Chưa có ứng dụng nào” (+ CTA “Thêm ứng dụng” khi online); `allPaused` → “Đang tạm dừng giám sát” (neutral gray); `monitoredTargets === 0` → “Chưa bật giám sát” (neutral gray); `counts.apps.down > 0` → “N ứng dụng đang lỗi”; `counts.apps.unknown > 0` → “Cần kiểm tra”; else “Tất cả hệ thống ổn định”. `isStale` → banner `role="status"`; `offline` + `savedAt` → banner “Đang offline · Dữ liệu lúc…”. Section app cards có heading “Tất cả ứng dụng”.
 
 - [ ] **Step 2: Run tests to verify they fail**
@@ -346,7 +346,7 @@ Expected: FAIL.
 
 - [ ] **Step 3: Implement**
 
-Desktop: `StatusSummaryStrip`, stale banner (`role="status"`), alert line từ `model.attention[0]` (app + target + số lần lỗi + thời gian + “Xem chi tiết”; tone đỏ nếu `state: 'down'`, amber nếu `state: 'unknown'`), `<table>` rows, rail `hidden xl:block` + list dưới bảng `xl:hidden`.
+Desktop: `StatusSummaryStrip`, stale banner (`role="status"`), alert line từ `model.attention[0]` (app + target + số lần lỗi + thời gian + “Xem chi tiết”; tone đỏ nếu `state: 'down'`, amber nếu `state: 'unknown'`), `<table>` rows, rail `hidden xl:block` + list dưới bảng `xl:hidden`. Khi `model.apps.length === 0`, bảng hiện empty state “Chưa có ứng dụng nào” + CTA “Thêm ứng dụng”.
 Mobile: stale/offline banner, hero, `AttentionList`, `AppStatusCard`s truyền `now` + `offline` để card/attention render `<div>` thay vì `<Link>`, không có action. Không render bottom nav ở đây (shell lo).
 
 - [ ] **Step 4: Run tests**
