@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { connection } from 'next/server';
+import { PauseMenu } from '@/components/admin/pause-menu';
 import { StatusBadge } from '@/components/admin/status-badge';
 import { ClickChart } from '@/components/charts/click-chart';
 import { LatencyChart } from '@/components/charts/latency-chart';
@@ -86,7 +87,7 @@ function TargetSection({
         </div>
         <Link
           href={`/admin/apps/${appId}/edit`}
-          className="text-xs text-ink/45 hover:text-ink"
+          className="text-xs text-muted hover:text-ink"
         >
           Sửa cấu hình →
         </Link>
@@ -94,19 +95,19 @@ function TargetSection({
 
       <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
         <div>
-          <p className="text-xs text-ink/45">Uptime 24h</p>
+          <p className="text-xs text-muted">Uptime 24h</p>
           <p className="mt-0.5 font-display text-xl font-semibold">
             {formatUptime(uptimePercent(checks24))}
           </p>
         </div>
         <div>
-          <p className="text-xs text-ink/45">Uptime 7 ngày</p>
+          <p className="text-xs text-muted">Uptime 7 ngày</p>
           <p className="mt-0.5 font-display text-xl font-semibold">
             {formatUptime(uptimePercent(checks7))}
           </p>
         </div>
         <div>
-          <p className="text-xs text-ink/45">Độ trễ TB 7 ngày</p>
+          <p className="text-xs text-muted">Độ trễ TB 7 ngày</p>
           <p className="mt-0.5 font-display text-xl font-semibold">
             {formatLatency(averageLatency(checks7))}
           </p>
@@ -114,18 +115,18 @@ function TargetSection({
       </div>
 
       <div className="mt-5">
-        <p className="text-xs text-ink/45">Độ trễ theo ngày</p>
+        <p className="text-xs text-muted">Độ trễ theo ngày</p>
         <LatencyChart data={latencyByDay(checks7, 7, now)} />
       </div>
 
       <div className="mt-5">
         <h3 className="text-sm font-semibold">Lần kiểm tra gần đây</h3>
         {rows.length === 0 ? (
-          <p className="mt-2 text-sm text-ink/45">Chưa có dữ liệu.</p>
+          <p className="mt-2 text-sm text-muted">Chưa có dữ liệu.</p>
         ) : (
           <div className="mt-2 overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="text-ink/45">
+              <thead className="text-muted">
                 <tr>
                   <th className="py-1 pr-3 font-medium">Thời điểm</th>
                   <th className="py-1 pr-3 font-medium">Trạng thái</th>
@@ -137,7 +138,7 @@ function TargetSection({
               <tbody className="divide-y divide-line">
                 {rows.map((check) => (
                   <tr key={check.id}>
-                    <td className="py-1.5 pr-3 text-ink/60">
+                    <td className="py-1.5 pr-3 text-muted">
                       {formatDateTime(check.checked_at)}
                     </td>
                     <td className="py-1.5 pr-3">
@@ -145,9 +146,9 @@ function TargetSection({
                         {check.ok ? 'Ổn' : 'Lỗi'}
                       </span>
                     </td>
-                    <td className="py-1.5 pr-3 text-ink/60">{check.status_code ?? '—'}</td>
-                    <td className="py-1.5 pr-3 text-ink/60">{check.latency_ms} ms</td>
-                    <td className="max-w-48 truncate py-1.5 text-ink/45">
+                    <td className="py-1.5 pr-3 text-muted">{check.status_code ?? '—'}</td>
+                    <td className="py-1.5 pr-3 text-muted">{check.latency_ms} ms</td>
+                    <td className="max-w-48 truncate py-1.5 text-muted">
                       {check.error ?? '—'}
                     </td>
                   </tr>
@@ -161,7 +162,7 @@ function TargetSection({
       <div className="mt-5">
         <h3 className="text-sm font-semibold">Sự cố</h3>
         {targetIncidents.length === 0 ? (
-          <p className="mt-2 text-sm text-ink/45">Chưa có sự cố.</p>
+          <p className="mt-2 text-sm text-muted">Chưa có sự cố.</p>
         ) : (
           <ul className="mt-2 space-y-2 text-xs">
             {targetIncidents.map((incident) => (
@@ -171,7 +172,7 @@ function TargetSection({
                   {incident.resolved_at ? formatDateTime(incident.resolved_at) : 'đang mở'}
                 </p>
                 {incident.first_error ? (
-                  <p className="mt-0.5 text-ink/45">{incident.first_error}</p>
+                  <p className="mt-0.5 text-muted">{incident.first_error}</p>
                 ) : null}
               </li>
             ))}
@@ -193,6 +194,7 @@ export default async function AppDetailPage({
   if (!app) notFound();
 
   const now = new Date();
+  const paused = isMonitoringPaused(app, now);
   const since30 = new Date(now.getTime() - 30 * DAY_MS);
   const since7 = new Date(now.getTime() - 7 * DAY_MS);
 
@@ -215,14 +217,14 @@ export default async function AppDetailPage({
 
   return (
     <section>
-      <Link href="/admin/apps" className="text-sm text-ink/50 hover:text-ink">
+      <Link href="/admin/apps" className="text-sm text-muted hover:text-ink">
         ← Ứng dụng
       </Link>
 
       <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-semibold tracking-tight">{app.name}</h1>
-          <p className="mt-1 text-sm text-ink/50">
+          <p className="mt-1 text-sm text-muted">
             /{app.slug} ·{' '}
             <a href={app.url} target="_blank" rel="noreferrer" className="hover:text-ink">
               {app.url}
@@ -231,11 +233,11 @@ export default async function AppDetailPage({
         </div>
         <div className="flex flex-wrap items-center gap-2 text-xs">
           {!app.is_visible ? (
-            <span className="rounded-full border border-line px-2 py-0.5 text-ink/50">
+            <span className="rounded-full border border-line px-2 py-0.5 text-muted">
               Đang ẩn
             </span>
           ) : null}
-          {isMonitoringPaused(app, now) ? (
+          {paused ? (
             <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-amber-800">
               Tạm dừng giám sát
             </span>
@@ -246,20 +248,21 @@ export default async function AppDetailPage({
           >
             Sửa
           </Link>
+          <PauseMenu appId={app.id} paused={paused} />
         </div>
       </div>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-line bg-card px-4 py-3">
-          <p className="text-xs text-ink/45">Lượt bấm 30 ngày</p>
+          <p className="text-xs text-muted">Lượt bấm 30 ngày</p>
           <p className="mt-1 font-display text-2xl font-semibold">{summary.last30}</p>
         </div>
         <div className="rounded-xl border border-line bg-card px-4 py-3">
-          <p className="text-xs text-ink/45">Khách riêng 30 ngày</p>
+          <p className="text-xs text-muted">Khách riêng 30 ngày</p>
           <p className="mt-1 font-display text-2xl font-semibold">{summary.unique30}</p>
         </div>
         <div className="rounded-xl border border-line bg-card px-4 py-3">
-          <p className="text-xs text-ink/45">Lượt bấm hôm nay</p>
+          <p className="text-xs text-muted">Lượt bấm hôm nay</p>
           <p className="mt-1 font-display text-2xl font-semibold">{summary.today}</p>
         </div>
       </div>

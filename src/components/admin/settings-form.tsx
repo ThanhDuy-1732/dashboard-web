@@ -28,7 +28,7 @@ export function SettingsForm({ initial }: { initial: SettingsRow }) {
     <form action={saveAction} className="mt-6 space-y-6">
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="telegramChatId" className="text-sm font-medium">
+          <label htmlFor="telegramChatId" className="text-sm font-medium text-ink">
             Telegram chat id
           </label>
           <input
@@ -38,13 +38,13 @@ export function SettingsForm({ initial }: { initial: SettingsRow }) {
             placeholder="123456789"
             className={inputClass}
           />
-          <p className="mt-1 text-xs text-ink/45">
+          <p className="mt-1 text-xs text-muted">
             Để trống nếu chưa dùng Telegram.
           </p>
         </div>
 
         <div>
-          <label htmlFor="repeatReminderMinutes" className="text-sm font-medium">
+          <label htmlFor="repeatReminderMinutes" className="text-sm font-medium text-ink">
             Nhắc lại khi vẫn chết (phút)
           </label>
           <input
@@ -56,11 +56,11 @@ export function SettingsForm({ initial }: { initial: SettingsRow }) {
             defaultValue={initial.repeat_reminder_minutes}
             className={inputClass}
           />
-          <p className="mt-1 text-xs text-ink/45">0 = không nhắc lại.</p>
+          <p className="mt-1 text-xs text-muted">0 = không nhắc lại.</p>
         </div>
 
         <div className="sm:col-span-2">
-          <label htmlFor="emailRecipients" className="text-sm font-medium">
+          <label htmlFor="emailRecipients" className="text-sm font-medium text-ink">
             Email nhận cảnh báo
           </label>
           <textarea
@@ -71,14 +71,14 @@ export function SettingsForm({ initial }: { initial: SettingsRow }) {
             placeholder={'owner@example.com\nops@example.com'}
             className={inputClass}
           />
-          <p className="mt-1 text-xs text-ink/45">Mỗi dòng một email, hoặc cách nhau bằng dấu phẩy.</p>
+          <p className="mt-1 text-xs text-muted">Mỗi dòng một email, hoặc cách nhau bằng dấu phẩy.</p>
           {error('emailRecipients') ? (
             <p className={errorClass}>{error('emailRecipients')}</p>
           ) : null}
         </div>
 
         <div>
-          <label htmlFor="failureThreshold" className="text-sm font-medium">
+          <label htmlFor="failureThreshold" className="text-sm font-medium text-ink">
             Số lần lỗi liên tiếp để báo chết
           </label>
           <input
@@ -96,7 +96,7 @@ export function SettingsForm({ initial }: { initial: SettingsRow }) {
         </div>
 
         <div>
-          <label htmlFor="slowThresholdMs" className="text-sm font-medium">
+          <label htmlFor="slowThresholdMs" className="text-sm font-medium text-ink">
             Ngưỡng chậm (ms)
           </label>
           <input
@@ -150,7 +150,7 @@ export function SettingsForm({ initial }: { initial: SettingsRow }) {
         <button
           type="submit"
           disabled={savePending}
-          className="rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper hover:bg-ink disabled:opacity-50"
+          className="min-h-11 rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper hover:bg-ink disabled:opacity-50"
         >
           {savePending ? 'Đang lưu...' : 'Lưu cài đặt'}
         </button>
@@ -165,7 +165,7 @@ export function SettingsForm({ initial }: { initial: SettingsRow }) {
         </button>
 
         {testState.message ? (
-          <span className="text-sm text-ink/60">{testState.message}</span>
+          <span className="text-sm text-muted">{testState.message}</span>
         ) : null}
       </div>
     </form>

@@ -27,7 +27,7 @@ export function AppForm({ action, initial, submitLabel }: AppFormProps) {
     <form action={formAction} className="mt-6 space-y-5">
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="name" className="text-sm font-medium">
+          <label htmlFor="name" className="text-sm font-medium text-ink">
             Tên ứng dụng
           </label>
           <input
@@ -42,7 +42,7 @@ export function AppForm({ action, initial, submitLabel }: AppFormProps) {
         </div>
 
         <div>
-          <label htmlFor="slug" className="text-sm font-medium">
+          <label htmlFor="slug" className="text-sm font-medium text-ink">
             Slug
           </label>
           <input
@@ -53,12 +53,12 @@ export function AppForm({ action, initial, submitLabel }: AppFormProps) {
             defaultValue={initial?.slug}
             className={inputClass}
           />
-          <p className="mt-1 text-xs text-ink/45">Chữ thường, số và dấu gạch ngang.</p>
+          <p className="mt-1 text-xs text-muted">Chữ thường, số và dấu gạch ngang.</p>
           {error('slug') ? <p className={errorClass}>{error('slug')}</p> : null}
         </div>
 
         <div className="sm:col-span-2">
-          <label htmlFor="description" className="text-sm font-medium">
+          <label htmlFor="description" className="text-sm font-medium text-ink">
             Mô tả ngắn
           </label>
           <input
@@ -72,7 +72,7 @@ export function AppForm({ action, initial, submitLabel }: AppFormProps) {
         </div>
 
         <div>
-          <label htmlFor="url" className="text-sm font-medium">
+          <label htmlFor="url" className="text-sm font-medium text-ink">
             URL ứng dụng
           </label>
           <input
@@ -88,7 +88,7 @@ export function AppForm({ action, initial, submitLabel }: AppFormProps) {
         </div>
 
         <div>
-          <label htmlFor="iconUrl" className="text-sm font-medium">
+          <label htmlFor="iconUrl" className="text-sm font-medium text-ink">
             URL icon
           </label>
           <input
@@ -103,7 +103,7 @@ export function AppForm({ action, initial, submitLabel }: AppFormProps) {
         </div>
 
         <div>
-          <label htmlFor="supabaseRef" className="text-sm font-medium">
+          <label htmlFor="supabaseRef" className="text-sm font-medium text-ink">
             Supabase ref
           </label>
           <input
@@ -113,14 +113,14 @@ export function AppForm({ action, initial, submitLabel }: AppFormProps) {
             defaultValue={initial?.supabaseRef}
             className={inputClass}
           />
-          <p className="mt-1 text-xs text-ink/45">
+          <p className="mt-1 text-xs text-muted">
             Phần đầu của https://&lt;ref&gt;.supabase.co
           </p>
           {error('supabaseRef') ? <p className={errorClass}>{error('supabaseRef')}</p> : null}
         </div>
 
         <div>
-          <label htmlFor="supabaseHealthUrl" className="text-sm font-medium">
+          <label htmlFor="supabaseHealthUrl" className="text-sm font-medium text-ink">
             URL health Supabase (tùy chọn)
           </label>
           <input
@@ -137,7 +137,7 @@ export function AppForm({ action, initial, submitLabel }: AppFormProps) {
         </div>
 
         <div>
-          <label htmlFor="expectedStatus" className="text-sm font-medium">
+          <label htmlFor="expectedStatus" className="text-sm font-medium text-ink">
             HTTP mong đợi
           </label>
           <input
@@ -153,7 +153,7 @@ export function AppForm({ action, initial, submitLabel }: AppFormProps) {
         </div>
 
         <div>
-          <label htmlFor="timeoutMs" className="text-sm font-medium">
+          <label htmlFor="timeoutMs" className="text-sm font-medium text-ink">
             Timeout (ms)
           </label>
           <input
@@ -194,11 +194,11 @@ export function AppForm({ action, initial, submitLabel }: AppFormProps) {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper transition-colors hover:bg-ink disabled:opacity-50"
+          className="min-h-11 rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper transition-colors hover:bg-ink disabled:opacity-50"
         >
           {pending ? 'Đang lưu...' : submitLabel}
         </button>
-        <Link href="/admin/apps" className="text-sm text-ink/55 hover:text-ink">
+        <Link href="/admin/apps" className="text-sm text-muted hover:text-ink">
           Hủy
         </Link>
       </div>

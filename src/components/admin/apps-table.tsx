@@ -73,9 +73,9 @@ function Row({
               >
                 {app.name}
               </Link>
-              <span className="text-xs text-ink/40">/{app.slug}</span>
+              <span className="text-xs text-muted">/{app.slug}</span>
               {!app.is_visible ? (
-                <span className="rounded-full border border-line px-2 py-0.5 text-xs text-ink/50">
+                <span className="rounded-full border border-line px-2 py-0.5 text-xs text-muted">
                   Đang ẩn
                 </span>
               ) : null}
@@ -85,12 +85,12 @@ function Row({
                 </span>
               ) : null}
             </div>
-            <p className="mt-0.5 truncate text-xs text-ink/45">{app.url}</p>
+            <p className="mt-0.5 truncate text-xs text-muted">{app.url}</p>
             <div className="mt-2 flex flex-wrap items-center gap-3">
-              <span className="flex items-center gap-1.5 text-xs text-ink/55">
+              <span className="flex items-center gap-1.5 text-xs text-muted">
                 App <StatusBadge state={statusFor(statusMap, app.id, 'app')} />
               </span>
-              <span className="flex items-center gap-1.5 text-xs text-ink/55">
+              <span className="flex items-center gap-1.5 text-xs text-muted">
                 Supabase <StatusBadge state={statusFor(statusMap, app.id, 'supabase')} />
               </span>
             </div>
@@ -198,7 +198,7 @@ function SortableRow({
             {...attributes}
             {...listeners}
             aria-label={`Kéo để sắp xếp ${app.name}`}
-            className="mt-1 cursor-grab rounded-md border border-line px-2 py-1 text-xs text-ink/40 hover:text-ink active:cursor-grabbing"
+            className="mt-1 cursor-grab rounded-md border border-line px-2 py-1 text-xs text-muted hover:text-ink active:cursor-grabbing"
           >
             ⠿
           </button>
@@ -249,7 +249,7 @@ export function AppsTable({ apps, statuses }: Props) {
     return (
       <div className="mt-8 rounded-xl border border-dashed border-line px-6 py-14 text-center">
         <p className="font-display text-lg font-semibold">Chưa có ứng dụng nào</p>
-        <p className="mt-1 text-sm text-ink/55">Thêm ứng dụng đầu tiên để bắt đầu.</p>
+        <p className="mt-1 text-sm text-muted">Thêm ứng dụng đầu tiên để bắt đầu.</p>
         <Link
           href="/admin/apps/new"
           className="mt-5 inline-block rounded-lg bg-moss px-4 py-2 text-sm font-semibold text-paper hover:bg-ink"

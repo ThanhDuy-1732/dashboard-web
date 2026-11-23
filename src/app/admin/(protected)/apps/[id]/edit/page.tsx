@@ -18,13 +18,13 @@ export default async function EditAppPage({
 
   return (
     <section>
-      <Link href="/admin/apps" className="text-sm text-ink/50 hover:text-ink">
+      <Link href="/admin/apps" className="text-sm text-muted hover:text-ink">
         ← Ứng dụng
       </Link>
       <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">
         Sửa {app.name}
       </h1>
-      <p className="mt-1 text-sm text-ink/55">Thay đổi có hiệu lực ngay sau khi lưu.</p>
+      <p className="mt-1 text-sm text-muted">Thay đổi có hiệu lực ngay sau khi lưu.</p>
 
       <AppForm
         action={updateAppAction.bind(null, app.id)}

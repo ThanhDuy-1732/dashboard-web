@@ -7,13 +7,13 @@ export const instant = false;
 export default function NewAppPage() {
   return (
     <section>
-      <Link href="/admin/apps" className="text-sm text-ink/50 hover:text-ink">
+      <Link href="/admin/apps" className="text-sm text-muted hover:text-ink">
         ← Ứng dụng
       </Link>
       <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight">
         Thêm ứng dụng
       </h1>
-      <p className="mt-1 text-sm text-ink/55">
+      <p className="mt-1 text-sm text-muted">
         Thông tin này hiển thị trên hub và dùng cho health check.
       </p>
 

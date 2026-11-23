@@ -19,11 +19,11 @@ export default async function LoginPage({
         action={loginAction}
         className="w-full max-w-sm rounded-2xl border border-line bg-card p-7"
       >
-        <p className="text-sm font-medium text-moss">Ecosystem Hub</p>
+        <p className="text-sm font-medium text-moss">Ecosystem Admin</p>
         <h1 className="mt-1 font-display text-2xl font-semibold tracking-tight">Quản trị</h1>
-        <p className="mt-2 text-sm text-ink/55">Nhập mật khẩu để xem bảng điều khiển.</p>
+        <p className="mt-2 text-sm text-muted">Nhập mật khẩu để xem bảng điều khiển.</p>
 
-        <label htmlFor="password" className="mt-6 block text-sm font-medium">
+        <label htmlFor="password" className="mt-6 block text-sm font-medium text-ink">
           Mật khẩu
         </label>
         <input
@@ -49,7 +49,7 @@ export default async function LoginPage({
 
         <button
           type="submit"
-          className="mt-6 w-full rounded-lg bg-moss px-4 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
+          className="mt-6 min-h-11 w-full rounded-lg bg-moss px-4 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
         >
           Đăng nhập
         </button>

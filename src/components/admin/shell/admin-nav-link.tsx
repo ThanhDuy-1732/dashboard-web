@@ -24,7 +24,7 @@ export function AdminNavLink({
   const variantClasses =
     variant === 'sidebar'
       ? 'flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-sm focus-visible:outline-white'
-      : 'flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[11px] leading-tight focus-visible:outline-moss';
+      : 'flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-xs leading-tight focus-visible:outline-moss';
   const stateClasses =
     variant === 'sidebar'
       ? active
