@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { AppRow, AppStatusRow, SettingsRow } from '@/lib/db/types';
+import { HealthRunError } from '@/lib/health/errors';
 import { runHealthChecks, type HealthDeps } from '@/lib/health/runner';
 import type { CheckResult } from '@/lib/health/types';
 
@@ -179,4 +180,41 @@ describe('runHealthChecks', () => {
       expect.objectContaining({ kind: 'recovered', downtimeMs: 5 * 60_000 }),
     );
   });
+
+  it('retries a transient persistence failure', async () => {
+    let attempts = 0;
+    const insertCheck = vi.fn(async () => {
+      attempts += 1;
+      if (attempts === 1) throw connectionError();
+    });
+    const deps = makeDeps({
+      listAppsToCheck: async () => [app({ monitor_supabase: false })],
+      insertCheck,
+    });
+
+    const result = await runHealthChecks(deps);
+
+    expect(result.checked).toBe(1);
+    expect(insertCheck).toHaveBeenCalledTimes(2);
+  });
+
+  it('fails the run with counts when persistence keeps failing', async () => {
+    const insertCheck = vi.fn(async () => {
+      throw connectionError();
+    });
+    const deps = makeDeps({
+      listAppsToCheck: async () => [app({ monitor_supabase: false })],
+      insertCheck,
+    });
+
+    const error = await runHealthChecks(deps).catch((failure: unknown) => failure);
+
+    expect(error).toBeInstanceOf(HealthRunError);
+    expect(error).toMatchObject({ checked: 1, failures: 1 });
+    expect(insertCheck).toHaveBeenCalledTimes(3);
+  });
 });
+
+function connectionError(): Error {
+  return Object.assign(new Error('connection closed'), { code: 'CONNECTION_CLOSED' });
+}

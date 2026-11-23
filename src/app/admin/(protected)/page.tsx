@@ -7,6 +7,7 @@ import { dailyClickSeries, clickCountsByApp, summarizeClicks, averageLatency } f
 import { listAllApps } from '@/lib/db/apps';
 import { getStatuses, listChecksSince } from '@/lib/db/checks';
 import { listClicksSince } from '@/lib/db/clicks';
+import { listRecentHealthRuns } from '@/lib/db/health-runs';
 import type { CheckRow, HealthState } from '@/lib/db/types';
 import { isMonitoringPaused } from '@/lib/health/targets';
 
@@ -42,11 +43,12 @@ function formatMs(value: number | null): string {
 export default async function AdminOverviewPage() {
   await connection();
   const now = new Date();
-  const [apps, clicks, checks, statuses] = await Promise.all([
+  const [apps, clicks, checks, statuses, recentRuns] = await Promise.all([
     listAllApps(),
     listClicksSince(new Date(now.getTime() - 30 * DAY_MS)),
     listChecksSince(new Date(now.getTime() - DAY_MS)),
     getStatuses(),
+    listRecentHealthRuns(1),
   ]);
 
   const summary = summarizeClicks(clicks, now, tz);
@@ -62,6 +64,7 @@ export default async function AdminOverviewPage() {
   const isStale = staleMinutes === null || staleMinutes > 10;
   const downTargets = statuses.filter((status) => status.state === 'down').length;
   const avgLatency = averageLatency(checks);
+  const latestRun = recentRuns[0] ?? null;
   const sortedApps = [...apps].sort(
     (a, b) => (counts.get(b.id) ?? 0) - (counts.get(a.id) ?? 0) || a.name.localeCompare(b.name),
   );
@@ -87,6 +90,14 @@ export default async function AdminOverviewPage() {
             ? 'Chưa có lần kiểm tra nào.'
             : `Lần kiểm tra cuối ${formatRelative(staleMinutes)}.`}{' '}
           Kiểm tra cron-job.org và endpoint <code>/api/cron/health</code>.
+        </div>
+      ) : null}
+
+      {latestRun && !latestRun.ok ? (
+        <div className="mt-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <strong className="font-semibold">Lần chạy giám sát gần nhất thất bại.</strong>{' '}
+          {latestRun.error ?? 'Không rõ lỗi'} · {latestRun.checked} mục tiêu đã kiểm tra,{' '}
+          {latestRun.failures} lỗi ghi.
         </div>
       ) : null}
 

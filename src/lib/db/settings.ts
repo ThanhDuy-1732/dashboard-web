@@ -48,6 +48,7 @@ export async function cleanupOldData(now: Date): Promise<void> {
 
   await sql.begin(async (tx) => {
     await tx`delete from checks where checked_at < ${checksBefore}`;
+    await tx`delete from health_runs where started_at < ${checksBefore}`;
     await tx`delete from click_events where clicked_at < ${clicksBefore}`;
     await tx`delete from login_attempts where attempted_at < ${new Date(now.getTime() - DAY_MS)}`;
     await tx`update settings set last_cleanup_at = ${now} where id = 1`;

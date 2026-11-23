@@ -6,7 +6,9 @@ import type {
   SettingsRow,
   Target,
 } from '@/lib/db/types';
+import { withDbRetry } from '@/lib/db/retry';
 import { evaluateCheck } from '@/lib/health/evaluate';
+import { HealthRunError } from '@/lib/health/errors';
 import { targetsForApp } from '@/lib/health/targets';
 import type { CheckResult, HealthAlert, HealthTarget } from '@/lib/health/types';
 
@@ -65,32 +67,34 @@ export async function runHealthChecks(
       const evaluation = evaluateCheck({ previous, check, settings, now: checkedAt });
 
       try {
-        await deps.insertCheck({
-          app_id: target.appId,
-          target: target.target,
-          checked_at: checkedAt,
-          ok: check.ok,
-          status_code: check.statusCode,
-          latency_ms: check.latencyMs,
-          error: check.error,
-        });
-
-        await deps.upsertStatus({
-          ...evaluation.status,
-          app_id: target.appId,
-          target: target.target,
-        });
-
-        if (evaluation.status.state === 'down') {
-          await deps.openIncident({
+        await withDbRetry(async () => {
+          await deps.insertCheck({
             app_id: target.appId,
             target: target.target,
-            started_at: checkedAt,
-            first_error: check.error,
+            checked_at: checkedAt,
+            ok: check.ok,
+            status_code: check.statusCode,
+            latency_ms: check.latencyMs,
+            error: check.error,
           });
-        } else if (evaluation.status.state === 'up') {
-          await deps.closeOpenIncident(target.appId, target.target, checkedAt);
-        }
+
+          await deps.upsertStatus({
+            ...evaluation.status,
+            app_id: target.appId,
+            target: target.target,
+          });
+
+          if (evaluation.status.state === 'down') {
+            await deps.openIncident({
+              app_id: target.appId,
+              target: target.target,
+              started_at: checkedAt,
+              first_error: check.error,
+            });
+          } else if (evaluation.status.state === 'up') {
+            await deps.closeOpenIncident(target.appId, target.target, checkedAt);
+          }
+        });
 
         if (evaluation.alert) {
           const downtimeMs =
@@ -128,7 +132,7 @@ export async function runHealthChecks(
   );
 
   if (failures > 0) {
-    throw new Error(`${failures} health target(s) failed to persist`);
+    throw new HealthRunError(checked, failures);
   }
 
   return { checked, skipped: false };
