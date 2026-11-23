@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>Ngoại tuyến · Ecosystem Admin</title>
+<style>
+  :root {
+    --paper: #f6f8f5;
+    --ink: #0f172a;
+    --card: #ffffff;
+    --line: #dbe3dc;
+    --muted: #475569;
+    --moss: #2f6b4f;
+    --ok-bg: #dcfce7;
+    --ok-fg: #15803d;
+    --bad-bg: #fee2e2;
+    --bad-fg: #b91c1c;
+    --warn-bg: #fef3c7;
+    --warn-fg: #b45309;
+    --unknown-bg: #e2e8f0;
+    --unknown-fg: #475569;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    line-height: 1.5;
+  }
+  main { max-width: 42rem; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { font-size: 1.25rem; margin: 0 0 4px; }
+  h2 { font-size: 1.05rem; margin: 0; }
+  p { margin: 0; }
+  .sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 16px; }
+  .banner {
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .stale {
+    border: 1px solid var(--warn-fg);
+    background: var(--warn-bg);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
+  .stale strong { color: var(--warn-fg); }
+  .stale p { font-size: 0.875rem; color: var(--muted); margin-top: 4px; }
+  .hero {
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .hero h2 { font-size: 1.5rem; letter-spacing: -0.01em; }
+  .hero p { margin-top: 8px; font-size: 0.875rem; color: var(--muted); }
+  .hero-ok { border-color: var(--ok-fg); background: var(--ok-bg); color: var(--ok-fg); }
+  .hero-bad { border-color: var(--bad-fg); background: var(--bad-bg); color: var(--bad-fg); }
+  .hero-warn { border-color: var(--warn-fg); background: var(--warn-bg); color: var(--warn-fg); }
+  .hero-unknown { background: var(--unknown-bg); color: var(--unknown-fg); }
+  section { margin-bottom: 20px; }
+  ul { list-style: none; margin: 8px 0 0; padding: 0; }
+  li { margin-bottom: 8px; }
+  .card {
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 14px;
+    padding: 12px 16px;
+  }
+  .card-down { border-left: 4px solid var(--bad-fg); background: var(--bad-bg); }
+  .row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .grow { min-width: 0; flex: 1; }
+  .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .meta { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+  .error {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .pill::before { content: ""; width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+  .pill-up { background: var(--ok-bg); color: var(--ok-fg); }
+  .pill-down { background: var(--bad-bg); color: var(--bad-fg); }
+  .pill-unknown, .pill-off { background: var(--unknown-bg); color: var(--unknown-fg); }
+  .pill-paused { background: var(--warn-bg); color: var(--warn-fg); }
+  .app-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .icon {
+    width: 40px; height: 40px; flex-shrink: 0;
+    border-radius: 10px; border: 1px solid var(--line); object-fit: cover;
+  }
+  .icon-fallback {
+    width: 40px; height: 40px; flex-shrink: 0;
+    border-radius: 10px; background: var(--moss); color: var(--paper);
+    display: flex; align-items: center; justify-content: center; font-weight: 600;
+  }
+  .hidden-badge {
+    display: inline-block;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 1px 8px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .targets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    border-top: 1px solid var(--line);
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+  .target { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
+  .target-label { font-size: 0.75rem; color: var(--muted); }
+  .target-value { display: flex; align-items: center; gap: 8px; }
+  .latency { font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .paused-note { margin-top: 12px; font-size: 0.875rem; color: var(--muted); }
+  .checked { margin-top: 8px; font-size: 0.75rem; color: var(--muted); }
+  .lock {
+    margin-top: 8px;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--muted);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+  .lock:hover { background: var(--paper); color: var(--ink); }
+  .empty {
+    border: 1px solid var(--line);
+    background: var(--card);
+    border-radius: 14px;
+    padding: 20px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<main id="admin-snapshot">
+  <h1>Ecosystem Admin</h1>
+  <p class="sub">Bản xem ngoại tuyến · chỉ đọc</p>
+  <div id="content"></div>
+</main>
+<script>
+(function () {
+  'use strict';
+
+  var DB_NAME = 'ecosystem-admin';
+  var DB_VERSION = 1;
+  var STORE = 'snapshots';
+  var KEY = 'overview';
+
+  var content = document.getElementById('content');
+
+  var STATE_LABELS = {
+    up: 'Ổn',
+    down: 'Lỗi',
+    unknown: 'Chưa rõ',
+    off: 'Tắt',
+    paused: 'Tạm dừng'
+  };
+  var TARGET_LABELS = { app: 'Ứng dụng', supabase: 'Supabase' };
+
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    return node;
+  }
+
+  function formatRelativeTime(value, now) {
+    if (!value) return '—';
+    var time = new Date(value).getTime();
+    if (isNaN(time)) return '—';
+    var diffMs = now.getTime() - time;
+    if (diffMs < 60000) return 'vừa xong';
+    var minutes = Math.floor(diffMs / 60000);
+    if (minutes < 60) return minutes + ' phút trước';
+    var hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + ' giờ trước';
+    return Math.floor(hours / 24) + ' ngày trước';
+  }
+
+  function formatDateTime(value) {
+    if (!value) return '—';
+    var date = new Date(value);
+    if (isNaN(date.getTime())) return '—';
+    try {
+      var parts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Ho_Chi_Minh',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23'
+      }).formatToParts(date);
+      var get = function (type) {
+        for (var i = 0; i < parts.length; i++) {
+          if (parts[i].type === type) return parts[i].value;
+        }
+        return '';
+      };
+      return get('day') + '/' + get('month') + '/' + get('year') + ' ' + get('hour') + ':' + get('minute');
+    } catch (error) {
+      return date.toISOString();
+    }
+  }
+
+  function formatLatency(ms) {
+    if (ms === null || ms === undefined) return '—';
+    return Math.round(ms) + ' ms';
+  }
+
+  function pill(state) {
+    var known = STATE_LABELS[state] ? state : 'unknown';
+    return el('span', 'pill pill-' + known, STATE_LABELS[known]);
+  }
+
+  function clearContent() {
+    while (content.firstChild) content.removeChild(content.firstChild);
+  }
+
+  function renderMessage(text) {
+    clearContent();
+    content.appendChild(el('div', 'empty', text));
+  }
+
+  function statusHero(model, now) {
+    var counts = model.counts;
+    var apps = model.apps;
+
+    if (!apps || apps.length === 0) {
+      return { title: 'Chưa có ứng dụng nào', className: '' };
+    }
+    if (model.allPaused) {
+      return { title: 'Đang tạm dừng giám sát', className: 'hero-unknown' };
+    }
+    if (counts.monitoredTargets === 0) {
+      return { title: 'Chưa bật giám sát', className: 'hero-unknown' };
+    }
+    if (counts.apps.down > 0) {
+      return {
+        title: counts.apps.down + ' ứng dụng đang lỗi',
+        detail:
+          counts.apps.up + '/' + apps.length + ' ứng dụng ổn · ' +
+          counts.targets.down + ' mục tiêu lỗi · ' +
+          formatRelativeTime(model.lastCheckAt, now),
+        className: 'hero-bad'
+      };
+    }
+    if (counts.apps.unknown > 0) {
+      return { title: 'Cần kiểm tra', className: 'hero-warn' };
+    }
+    return { title: 'Tất cả hệ thống ổn định', className: 'hero-ok' };
+  }
+
+  function latestCheckAt(app) {
+    var times = [];
+    if (app.app && app.app.lastCheckAt) times.push(app.app.lastCheckAt);
+    if (app.supabase && app.supabase.lastCheckAt) times.push(app.supabase.lastCheckAt);
+    if (times.length === 0) return null;
+    return times.reduce(function (latest, value) {
+      return new Date(value).getTime() > new Date(latest).getTime() ? value : latest;
+    });
+  }
+
+  function targetState(target, paused) {
+    if (paused) return 'paused';
+    return (target && target.state) || 'off';
+  }
+
+  function renderAttention(items, now) {
+    if (!items || items.length === 0) return null;
+    var section = el('section');
+    section.appendChild(el('h2', null, 'Cần chú ý'));
+    var list = el('ul');
+    items.forEach(function (item) {
+      var li = el('li');
+      var card = el('div', 'card');
+      var row = el('div', 'row');
+      var grow = el('div', 'grow');
+      grow.appendChild(el('p', 'name', item.appName));
+      var detail = item.consecutiveFailures > 0
+        ? item.consecutiveFailures + ' lần lỗi liên tiếp'
+        : 'Chưa có dữ liệu kiểm tra';
+      grow.appendChild(el('p', 'meta', (TARGET_LABELS[item.target] || item.target) + ' · ' + detail));
+      if (item.lastError) {
+        grow.appendChild(el('p', 'error', 'Lỗi gần nhất: ' + item.lastError));
+      }
+      var side = el('div', 'side');
+      side.appendChild(pill(item.state));
+      side.appendChild(el('span', 'meta', formatRelativeTime(item.lastCheckAt, now)));
+      row.appendChild(grow);
+      row.appendChild(side);
+      card.appendChild(row);
+      li.appendChild(card);
+      list.appendChild(li);
+    });
+    section.appendChild(list);
+    return section;
+  }
+
+  function renderAppCard(app, now) {
+    var down = !app.paused && app.worstState === 'down';
+    var card = el('div', 'card' + (down ? ' card-down' : ''));
+
+    var row = el('div', 'row');
+    var head = el('div', 'app-head grow');
+    if (app.iconUrl) {
+      var img = document.createElement('img');
+      img.className = 'icon';
+      img.width = 40;
+      img.height = 40;
+      img.alt = '';
+      img.src = app.iconUrl;
+      head.appendChild(img);
+    } else {
+      head.appendChild(el('span', 'icon-fallback', String(app.name || '?').slice(0, 1).toUpperCase()));
+    }
+    var names = el('div', 'grow');
+    names.appendChild(el('span', 'name', app.name));
+    names.appendChild(el('span', 'meta', '/' + app.slug));
+    head.appendChild(names);
+    row.appendChild(head);
+    row.appendChild(pill(app.paused ? 'paused' : app.worstState));
+    card.appendChild(row);
+
+    if (!app.isVisible) {
+      card.appendChild(el('span', 'hidden-badge', 'Đang ẩn'));
+    }
+
+    if (app.paused) {
+      card.appendChild(el('p', 'paused-note', 'Ứng dụng đang tạm dừng theo dõi.'));
+    } else {
+      var targets = el('div', 'targets');
+      [['App', app.app], ['Supabase', app.supabase]].forEach(function (pair) {
+        var target = el('div', 'target');
+        target.appendChild(el('span', 'target-label', pair[0]));
+        var value = el('span', 'target-value');
+        value.appendChild(pill(targetState(pair[1], app.paused)));
+        value.appendChild(el('span', 'latency', formatLatency(pair[1] ? pair[1].latencyMs : null)));
+        target.appendChild(value);
+        targets.appendChild(target);
+      });
+      card.appendChild(targets);
+    }
+
+    card.appendChild(el('p', 'checked', 'Kiểm tra ' + formatRelativeTime(latestCheckAt(app), now)));
+    return card;
+  }
+
+  function renderSnapshot(snapshot) {
+    var model = snapshot.model;
+    var now = new Date();
+    clearContent();
+
+    var banner = el('p', 'banner');
+    banner.setAttribute('role', 'status');
+    banner.textContent =
+      'Đang offline · Dữ liệu lúc ' + formatDateTime(snapshot.savedAt) +
+      ' · Kiểm tra cuối ' + formatRelativeTime(model.lastCheckAt, now);
+    content.appendChild(banner);
+
+    if (model.isStale) {
+      var stale = el('div', 'stale');
+      stale.setAttribute('role', 'status');
+      stale.appendChild(el('strong', null, 'Dữ liệu giám sát đang cũ.'));
+      stale.appendChild(el('p', null, model.lastCheckAt
+        ? 'Kiểm tra cuối ' + formatRelativeTime(model.lastCheckAt, now) + '.'
+        : 'Chưa có lần kiểm tra nào.'));
+      content.appendChild(stale);
+    }
+
+    var hero = statusHero(model, now);
+    var heroSection = el('section', 'hero' + (hero.className ? ' ' + hero.className : ''));
+    heroSection.appendChild(el('h2', null, hero.title));
+    if (hero.detail) heroSection.appendChild(el('p', null, hero.detail));
+    content.appendChild(heroSection);
+
+    var attention = renderAttention(model.attention, now);
+    if (attention) content.appendChild(attention);
+
+    if (model.apps && model.apps.length > 0) {
+      var appsSection = el('section');
+      appsSection.appendChild(el('h2', null, 'Tất cả ứng dụng'));
+      var list = el('ul');
+      model.apps.forEach(function (app) {
+        var li = el('li');
+        li.appendChild(renderAppCard(app, now));
+        list.appendChild(li);
+      });
+      appsSection.appendChild(list);
+      content.appendChild(appsSection);
+    }
+
+    var lock = el('button', 'lock', 'Khoá');
+    lock.type = 'button';
+    lock.addEventListener('click', function () {
+      lock.disabled = true;
+      clearSnapshot(function () {
+        renderMessage('Đã xoá dữ liệu offline. Kết nối mạng và đăng nhập lại để xem bảng điều khiển.');
+      });
+    });
+    content.appendChild(lock);
+  }
+
+  function openDb(onSuccess, onError) {
+    var request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = function () {
+      var db = request.result;
+      if (!db.objectStoreNames.contains(STORE)) {
+        db.createObjectStore(STORE);
+      }
+    };
+    request.onsuccess = function () { onSuccess(request.result); };
+    request.onerror = function () { onError(request.error); };
+    request.onblocked = function () { onError(new Error('indexedDB blocked')); };
+  }
+
+  function readSnapshot(onDone) {
+    if (typeof indexedDB === 'undefined') {
+      onDone(null);
+      return;
+    }
+    try {
+      openDb(function (db) {
+        try {
+          var tx = db.transaction(STORE, 'readonly');
+          var get = tx.objectStore(STORE).get(KEY);
+          get.onsuccess = function () {
+            db.close();
+            var value = get.result;
+            if (value && value.version === 1 && typeof value.savedAt === 'string' && value.model) {
+              onDone(value);
+            } else {
+              onDone(null);
+            }
+          };
+          get.onerror = function () {
+            db.close();
+            onDone(null);
+          };
+        } catch (error) {
+          db.close();
+          onDone(null);
+        }
+      }, function () { onDone(null); });
+    } catch (error) {
+      onDone(null);
+    }
+  }
+
+  function clearSnapshot(onDone) {
+    if (typeof indexedDB === 'undefined') {
+      onDone();
+      return;
+    }
+    try {
+      openDb(function (db) {
+        try {
+          var tx = db.transaction(STORE, 'readwrite');
+          tx.objectStore(STORE).delete(KEY);
+          tx.oncomplete = function () {
+            db.close();
+            onDone();
+          };
+          tx.onerror = function () {
+            db.close();
+            onDone();
+          };
+          tx.onabort = function () {
+            db.close();
+            onDone();
+          };
+        } catch (error) {
+          db.close();
+          onDone();
+        }
+      }, function () { onDone(); });
+    } catch (error) {
+      onDone();
+    }
+  }
+
+  readSnapshot(function (snapshot) {
+    if (!snapshot) {
+      renderMessage('Chưa có dữ liệu offline. Kết nối mạng và đăng nhập để tải bảng điều khiển.');
+      return;
+    }
+    renderSnapshot(snapshot);
+  });
+})();
+</script>
+</body>
+</html>

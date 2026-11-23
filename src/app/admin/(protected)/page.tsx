@@ -3,6 +3,7 @@ import { connection } from 'next/server';
 import { AdminPageHeader } from '@/components/admin/admin-page-header';
 import { OverviewDesktop } from '@/components/admin/overview-desktop';
 import { OverviewMobile } from '@/components/admin/overview-mobile';
+import { AdminSnapshotWriter } from '@/components/admin/snapshot-writer';
 import { buildAdminOverview } from '@/lib/admin/overview';
 import { listAllApps } from '@/lib/db/apps';
 import { getStatuses, listChecksSince, listRecentIncidents } from '@/lib/db/checks';
@@ -24,6 +25,7 @@ export default async function AdminOverviewPage() {
 
   return (
     <div className="space-y-5">
+      <AdminSnapshotWriter model={model} />
       <AdminPageHeader
         title="Tổng quan"
         description="Tình trạng sức khỏe ứng dụng và các sự cố gần đây."

@@ -38,6 +38,16 @@ describe('adminGate', () => {
     expect(adminGate({ pathname: '/admin/login', hasValidSession: false })).toBe('allow');
   });
 
+  it('always allows the offline shell paths', () => {
+    expect(adminGate({ pathname: '/admin/offline', hasValidSession: false })).toBe('allow');
+    expect(adminGate({ pathname: '/admin/offline.html', hasValidSession: false })).toBe('allow');
+  });
+
+  it('still protects other admin paths without a session', () => {
+    expect(adminGate({ pathname: '/admin/apps', hasValidSession: false })).toBe('login');
+    expect(adminGate({ pathname: '/admin/offline/extra', hasValidSession: false })).toBe('login');
+  });
+
   it('allows public paths', () => {
     expect(adminGate({ pathname: '/', hasValidSession: false })).toBe('allow');
     expect(adminGate({ pathname: '/api/go/x', hasValidSession: false })).toBe('allow');
