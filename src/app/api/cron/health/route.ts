@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { verifyCronSecret } from '@/lib/auth/cron';
 import { insertHealthRun } from '@/lib/db/health-runs';
+import { withDbRetry } from '@/lib/db/retry';
 import { claimHealthRun, releaseHealthRun } from '@/lib/db/settings';
 import { getServerEnv } from '@/lib/env';
 import { maybeCleanup } from '@/lib/health/cleanup';
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
-  const token = await claimHealthRun();
+  const token = await withDbRetry(() => claimHealthRun());
   if (!token) {
     return NextResponse.json({ skipped: true }, { status: 202 });
   }
