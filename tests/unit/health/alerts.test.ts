@@ -22,6 +22,7 @@ function app(overrides: Partial<AppRow> = {}): AppRow {
     description: null,
     url: 'https://blog.example.com',
     icon_url: null,
+    preview_url: null,
     supabase_ref: null,
     supabase_health_url: null,
     sort_order: 0,

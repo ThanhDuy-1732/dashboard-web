@@ -47,6 +47,7 @@ function makeApp(monitoringPausedUntil: Date | null): AppRow {
     description: null,
     url: 'https://alpha.example.com',
     icon_url: null,
+    preview_url: null,
     supabase_ref: null,
     supabase_health_url: null,
     sort_order: 0,

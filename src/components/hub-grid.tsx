@@ -12,7 +12,7 @@ export function HubGrid({ apps }: { apps: PublicApp[] }) {
   }
 
   return (
-    <div className="mt-8 grid gap-3 sm:grid-cols-2">
+    <div className="mt-5 grid items-stretch gap-4 sm:grid-cols-2">
       {apps.map((app) => (
         <AppCard key={app.id} app={app} />
       ))}

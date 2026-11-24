@@ -34,6 +34,7 @@ export default async function EditAppPage({
           description: app.description ?? undefined,
           url: app.url,
           iconUrl: app.icon_url ?? undefined,
+          previewUrl: app.preview_url ?? undefined,
           supabaseRef: app.supabase_ref ?? undefined,
           supabaseHealthUrl: app.supabase_health_url ?? undefined,
           expectedStatus: app.expected_status,

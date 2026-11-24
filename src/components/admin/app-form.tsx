@@ -102,6 +102,25 @@ export function AppForm({ action, initial, submitLabel }: AppFormProps) {
           {error('iconUrl') ? <p className={errorClass}>{error('iconUrl')}</p> : null}
         </div>
 
+        <div className="sm:col-span-2">
+          <label htmlFor="previewUrl" className="text-sm font-medium text-ink">
+            URL ảnh xem trước
+          </label>
+          <input
+            id="previewUrl"
+            name="previewUrl"
+            type="url"
+            placeholder="/previews/ten-app.webp hoặc https://..."
+            defaultValue={initial?.previewUrl}
+            className={inputClass}
+          />
+          <p className="mt-1 text-xs text-muted">
+            Ảnh chụp màn hình hiện trên trang chủ. Chạy <code>npm run previews</code> để chụp
+            tự động vào <code>public/previews/</code>.
+          </p>
+          {error('previewUrl') ? <p className={errorClass}>{error('previewUrl')}</p> : null}
+        </div>
+
         <div>
           <label htmlFor="supabaseRef" className="text-sm font-medium text-ink">
             Supabase ref

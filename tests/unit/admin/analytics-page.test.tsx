@@ -41,6 +41,7 @@ function makeApp(id: string, name: string, sortOrder: number): AppRow {
     description: null,
     url: `https://${id}.example.com`,
     icon_url: null,
+    preview_url: null,
     supabase_ref: null,
     supabase_health_url: null,
     sort_order: sortOrder,

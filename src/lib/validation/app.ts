@@ -12,6 +12,22 @@ const trimmedOptionalUrl = () =>
     z.preprocess(blankToUndefined, z.url().optional()),
   );
 
+// Ảnh xem trước có thể là file trong public/ ("/previews/app.webp") hoặc URL đầy đủ.
+const trimmedOptionalImageSrc = () =>
+  z.preprocess(
+    (value) => (typeof value === 'string' ? value.trim() : value),
+    z.preprocess(
+      blankToUndefined,
+      z
+        .string()
+        .refine(
+          (value) => value.startsWith('/') || z.url().safeParse(value).success,
+          'Dùng URL đầy đủ hoặc đường dẫn bắt đầu bằng /',
+        )
+        .optional(),
+    ),
+  );
+
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const appInputSchema = z.object({
@@ -23,6 +39,7 @@ export const appInputSchema = z.object({
     .trim()
     .pipe(z.url()),
   iconUrl: trimmedOptionalUrl(),
+  previewUrl: trimmedOptionalImageSrc(),
   healthUrl: trimmedOptionalUrl(),
   supabaseRef: trimmedOptionalText(64),
   supabaseHealthUrl: trimmedOptionalUrl(),
@@ -41,6 +58,7 @@ export function parseAppForm(formData: FormData) {
     description: formData.get('description') ?? '',
     url: formData.get('url') ?? '',
     iconUrl: formData.get('iconUrl') ?? '',
+    previewUrl: formData.get('previewUrl') ?? '',
     healthUrl: formData.get('healthUrl') ?? '',
     supabaseRef: formData.get('supabaseRef') ?? '',
     supabaseHealthUrl: formData.get('supabaseHealthUrl') ?? '',

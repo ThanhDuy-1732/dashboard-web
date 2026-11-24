@@ -4,7 +4,7 @@ import type { AppRow, AppWriteInput, PublicApp } from '@/lib/db/types';
 export async function listVisibleApps(): Promise<PublicApp[]> {
   const sql = getSql();
   return sql<PublicApp[]>`
-    select id, slug, name, description, url, icon_url
+    select id, slug, name, description, url, icon_url, preview_url
     from apps
     where is_visible = true
     order by sort_order asc, name asc
@@ -25,7 +25,7 @@ export async function getAppById(id: string): Promise<AppRow | null> {
 export async function getVisibleAppBySlug(slug: string): Promise<PublicApp | null> {
   const sql = getSql();
   const [row] = await sql<PublicApp[]>`
-    select id, slug, name, description, url, icon_url
+    select id, slug, name, description, url, icon_url, preview_url
     from apps
     where slug = ${slug} and is_visible = true
   `;
@@ -36,11 +36,11 @@ export async function createApp(input: AppWriteInput): Promise<AppRow> {
   const sql = getSql();
   const [row] = await sql<AppRow[]>`
     insert into apps (
-      name, slug, description, url, icon_url, supabase_ref, supabase_health_url,
+      name, slug, description, url, icon_url, preview_url, supabase_ref, supabase_health_url,
       sort_order, is_visible, monitor_app, monitor_supabase, expected_status, timeout_ms
     ) values (
       ${input.name}, ${input.slug}, ${input.description}, ${input.url}, ${input.icon_url},
-      ${input.supabase_ref}, ${input.supabase_health_url}, ${input.sort_order},
+      ${input.preview_url}, ${input.supabase_ref}, ${input.supabase_health_url}, ${input.sort_order},
       ${input.is_visible}, ${input.monitor_app}, ${input.monitor_supabase},
       ${input.expected_status}, ${input.timeout_ms}
     )
@@ -59,6 +59,7 @@ export async function updateApp(id: string, input: AppWriteInput): Promise<AppRo
       description = ${input.description},
       url = ${input.url},
       icon_url = ${input.icon_url},
+      preview_url = ${input.preview_url},
       supabase_ref = ${input.supabase_ref},
       supabase_health_url = ${input.supabase_health_url},
       sort_order = ${input.sort_order},

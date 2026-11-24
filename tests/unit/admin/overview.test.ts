@@ -16,6 +16,7 @@ function makeApp(overrides: Partial<AppRow> = {}): AppRow {
     description: null,
     url: 'https://app-1.example.com',
     icon_url: null,
+    preview_url: null,
     supabase_ref: 'abcdefghijklmnopqrst',
     supabase_health_url: null,
     sort_order: 0,

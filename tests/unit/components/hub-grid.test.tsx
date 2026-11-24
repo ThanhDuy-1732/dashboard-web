@@ -11,6 +11,7 @@ const apps: PublicApp[] = [
     description: 'Ghi chép',
     url: 'https://blog.example.com',
     icon_url: null,
+    preview_url: null,
   },
 ];
 

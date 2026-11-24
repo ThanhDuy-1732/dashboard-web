@@ -25,6 +25,56 @@ function useStandaloneDisplay(): boolean {
   return standalone;
 }
 
+const thumbFrame = 'block overflow-hidden border-b border-line bg-moss/5';
+
+function AppThumb({ app }: { app: PublicApp }) {
+  if (app.preview_url) {
+    return (
+      <span className={`${thumbFrame} bg-moss/10`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={app.preview_url}
+          alt=""
+          width={1200}
+          height={750}
+          loading="lazy"
+          decoding="async"
+          className="aspect-[16/10] w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+        />
+      </span>
+    );
+  }
+
+  if (app.icon_url) {
+    return (
+      <span className={`${thumbFrame} flex aspect-[16/10] items-center justify-center`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={app.icon_url}
+          alt=""
+          width={56}
+          height={56}
+          loading="lazy"
+          decoding="async"
+          className="h-14 w-14 rounded-xl border border-line object-cover"
+        />
+      </span>
+    );
+  }
+
+  return (
+    <span className={`${thumbFrame} flex aspect-[16/10] items-center justify-center`}>
+      <span
+        data-testid="app-icon-fallback"
+        aria-hidden="true"
+        className="flex h-14 w-14 items-center justify-center rounded-xl bg-moss font-display text-2xl font-semibold text-paper"
+      >
+        {app.name.slice(0, 1).toUpperCase()}
+      </span>
+    </span>
+  );
+}
+
 export function AppCard({ app }: { app: PublicApp }) {
   const standalone = useStandaloneDisplay();
 
@@ -33,41 +83,17 @@ export function AppCard({ app }: { app: PublicApp }) {
       href={`/api/go/${app.slug}`}
       target={standalone ? undefined : '_blank'}
       rel={standalone ? undefined : 'noopener noreferrer'}
-      className="group flex items-center gap-4 rounded-xl border border-line bg-card px-4 py-4 transition-colors hover:border-moss focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-line bg-card transition-colors hover:border-moss focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss"
     >
-      {app.icon_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={app.icon_url}
-          alt=""
-          width={48}
-          height={48}
-          className="h-12 w-12 shrink-0 rounded-lg border border-line object-cover"
-        />
-      ) : (
-        <span
-          data-testid="app-icon-fallback"
-          aria-hidden="true"
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-moss font-display text-xl font-semibold text-paper"
-        >
-          {app.name.slice(0, 1).toUpperCase()}
-        </span>
-      )}
+      <AppThumb app={app} />
 
-      <span className="min-w-0 flex-1">
-        <span className="block truncate font-display text-lg font-semibold tracking-tight text-ink">
+      <span className="flex flex-1 flex-col gap-1 px-4 pt-3 pb-4">
+        <span className="font-display text-lg font-semibold leading-6 tracking-tight text-ink">
           {app.name}
         </span>
         {app.description ? (
-          <span className="mt-0.5 block truncate text-sm text-ink/60">{app.description}</span>
+          <span className="line-clamp-2 text-sm leading-5 text-ink/70">{app.description}</span>
         ) : null}
-      </span>
-
-      <span
-        aria-hidden="true"
-        className="text-xl text-ink/30 transition-transform group-hover:translate-x-0.5 group-hover:text-moss"
-      >
-        →
       </span>
     </a>
   );

@@ -12,7 +12,8 @@
     "db:migrate": "node --env-file=.env.local scripts/db-migrate.mjs",
     "db:check": "node --env-file=.env.local scripts/db-check.mjs",
     "db:seed": "node --env-file=.env.local scripts/db-seed.mjs",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "previews": "node scripts/fetch-previews.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

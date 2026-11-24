@@ -8,6 +8,7 @@ export type AppRow = {
   description: string | null;
   url: string;
   icon_url: string | null;
+  preview_url: string | null;
   supabase_ref: string | null;
   supabase_health_url: string | null;
   sort_order: number;
@@ -25,7 +26,7 @@ export type AppRow = {
 
 export type PublicApp = Pick<
   AppRow,
-  'id' | 'slug' | 'name' | 'description' | 'url' | 'icon_url'
+  'id' | 'slug' | 'name' | 'description' | 'url' | 'icon_url' | 'preview_url'
 >;
 
 export type AppWriteInput = {
@@ -34,6 +35,7 @@ export type AppWriteInput = {
   description: string | null;
   url: string;
   icon_url: string | null;
+  preview_url: string | null;
   supabase_ref: string | null;
   supabase_health_url: string | null;
   sort_order: number;

@@ -40,6 +40,7 @@ const app: AppRow = {
   description: 'Internal tools',
   url: 'https://cedar.example.com',
   icon_url: null,
+  preview_url: null,
   supabase_ref: null,
   supabase_health_url: null,
   sort_order: 0,

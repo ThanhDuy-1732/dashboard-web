@@ -37,6 +37,7 @@ function toWriteInput(
     description: input.description ?? null,
     url: input.url,
     icon_url: input.iconUrl ?? null,
+    preview_url: input.previewUrl ?? null,
     supabase_ref: input.supabaseRef ?? null,
     supabase_health_url: input.supabaseHealthUrl ?? null,
     sort_order: existing?.sort_order ?? sortOrder,

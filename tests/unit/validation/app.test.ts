@@ -10,6 +10,14 @@ describe('appInputSchema', () => {
     expect(parsed.timeoutMs).toBe(5000);
     expect(parsed.description).toBeUndefined();
     expect(parsed.iconUrl).toBeUndefined();
+    expect(parsed.previewUrl).toBeUndefined();
+  });
+
+  it('keeps a preview url and rejects a broken one', () => {
+    expect(appInputSchema.parse({ ...base, previewUrl: '/previews/blog.webp' }).previewUrl).toBe(
+      '/previews/blog.webp',
+    );
+    expect(appInputSchema.safeParse({ ...base, previewUrl: 'nope' }).success).toBe(false);
   });
 
   it('trims the name', () => {
