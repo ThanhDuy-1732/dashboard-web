@@ -38,10 +38,10 @@ export async function runHealthChecks(
   deps: HealthDeps,
 ): Promise<{ checked: number; skipped: boolean }> {
   const checkedAt = deps.now();
-  const apps = await deps.listAppsToCheck(checkedAt);
+  const apps = await withDbRetry(() => deps.listAppsToCheck(checkedAt));
   const targets = apps.flatMap((app) => targetsForApp(app, checkedAt));
-  const settings = await deps.getSettings();
-  const statuses = await deps.getStatuses();
+  const settings = await withDbRetry(() => deps.getSettings());
+  const statuses = await withDbRetry(() => deps.getStatuses());
   const statusMap = new Map(
     statuses.map((status) => [`${status.app_id}:${status.target}`, status]),
   );

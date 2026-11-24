@@ -84,6 +84,17 @@ describe('POST /api/cron/health', () => {
     expect(releaseHealthRun).toHaveBeenCalledWith('token-1');
   });
 
+  it('retries a transient claim failure', async () => {
+    vi.mocked(claimHealthRun)
+      .mockRejectedValueOnce({ code: 'CONNECTION_CLOSED' })
+      .mockResolvedValue('token-1');
+
+    const response = await POST(request(secret));
+
+    expect(response.status).toBe(200);
+    expect(claimHealthRun).toHaveBeenCalledTimes(2);
+  });
+
   it('records a successful run', async () => {
     await POST(request(secret));
 

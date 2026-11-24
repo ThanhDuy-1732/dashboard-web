@@ -181,6 +181,34 @@ describe('runHealthChecks', () => {
     );
   });
 
+  it('retries transient read failures', async () => {
+    let listCalls = 0;
+    let settingsCalls = 0;
+    let statusCalls = 0;
+    const deps = makeDeps({
+      listAppsToCheck: async () => {
+        listCalls += 1;
+        if (listCalls === 1) throw connectionError();
+        return [app({ monitor_supabase: false })];
+      },
+      getSettings: async () => {
+        settingsCalls += 1;
+        if (settingsCalls === 1) throw connectionError();
+        return settings();
+      },
+      getStatuses: async () => {
+        statusCalls += 1;
+        if (statusCalls === 1) throw connectionError();
+        return [];
+      },
+    });
+
+    const result = await runHealthChecks(deps);
+
+    expect(result.checked).toBe(1);
+    expect([listCalls, settingsCalls, statusCalls]).toEqual([2, 2, 2]);
+  });
+
   it('retries a transient persistence failure', async () => {
     let attempts = 0;
     const insertCheck = vi.fn(async () => {
