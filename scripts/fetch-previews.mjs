@@ -17,6 +17,7 @@ const APPS = [
   // Microlink render đúng viewport và đợi animation xong.
   { slug: 'qr-app', url: 'https://qr-app-gamma-silk.vercel.app', waitMs: 6000 },
   { slug: 'smart-social-shopping-app', url: 'https://smart-social-shopping-app.vercel.app' },
+  { slug: 'senseless', url: 'https://senseless-app.vercel.app' },
 ];
 
 const WIDTH = 1200;
